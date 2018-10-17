@@ -9,7 +9,7 @@ from django.contrib.auth import login, authenticate, logout
 
 # Create your views here.
 def index(request):
-    if(request.user.is_authenticated()):
+    if(request.user.is_authenticated):
         return render(request, 'testLogin.html')
     else:
         return render(request, 'login.html')
