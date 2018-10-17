@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -6,11 +7,12 @@ from django.contrib.auth.models import User
 from .models import Buser
 from django.contrib.auth import login, authenticate, logout
 
-
 # Create your views here.
 def index(request):
-    return render(request, 'testLogin.html')
-
+    if(request.user.is_authenticated()):
+        return render(request, 'testLogin.html')
+    else:
+        return render(request, 'login.html')
 
 # List All Users o List one (username)
 def users(request, user=""):
@@ -44,6 +46,7 @@ def signupView(request):
             if user is not None:
                 if user.is_active:  # Active user are not banned users
                     login(request, user)
+                    request.session.set_expiry(300);
                     # Redirect to a success page.
                     return HttpResponseRedirect(reverse('index'))
 
@@ -69,7 +72,7 @@ def loginView(request):
         # Show an error page
         return render(request, 'login.html')
 
-
+@login_required
 def logoutView(request):
     logout(request)
     # Redirect to a success page.
