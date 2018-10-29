@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    # circleCI only in master,SP's and US's branches
+    branches: 
+      only: 
+        - master
+        - /SP-.*/
+        - /US-.*/
+    docker:
+      - image: circleci/python:3.5.2
+    working_directory: ~/tmp
+    # steps to be execute
+    steps:
+      - checkout
