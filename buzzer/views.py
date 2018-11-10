@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django import forms
@@ -10,8 +10,8 @@ from .models import Profile
 from .models import Buzz
 from django.contrib.auth import login, authenticate, logout
 from itertools import chain
-from .forms import PostForm
-from .models import Buzz
+from .forms import PostForm,ProfileForm
+from .models import Buzz,Profile
 
 
 # Create your views here.
@@ -193,3 +193,23 @@ def post_new(request):
         form = PostForm()
     return render(request, 'post_edit.html', {'form': form})
 """
+def load_image(request):
+    instance = get_object_or_404(Profile, user=request.user)
+    if request.method=="POST":
+        form = ProfileForm(request.POST, request.FILES,instance=instance)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.image = request.FILES['image']
+            instance.save()
+            i = Profile.objects.get(user = request.user)
+            u = request.user
+            # u.profile.image.url
+            print(i.image , u)
+            user = request.user
+            profile = User.objects.filter(username=user)
+            print(profile.first())
+            return render(request,'profile.html',{'i':i,'u':u,'profile':profile.first()})
+    else:
+        form = ProfileForm()
+    return render(request, 'edit.html', {'form': form})
