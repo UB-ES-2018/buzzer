@@ -15,8 +15,7 @@
 		<a href="{% url 'profile' user=profile.username %}"></a>
 		<a href="{% url 'load_image' %}">
         <img class="pfp" src="{{ profile.profile.image.url}}"></a>
-		<a href="{% url 'load_image' %}">
-			<button type="submit" class="btn btn-warning">Load Image</button></a>
+		
       <div class="names">
         <a href="{% url 'profile' user=profile.username %}"><h4 class="username">{{profile.profile.screen_name}}</h4></a>
         <h5 class="usertag">@{{profile.username}}</h5>
