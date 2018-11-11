@@ -22,6 +22,8 @@ urlpatterns = [
     url(r'^profiles/$', views.profiles, name='profiles'),
     url(r'^profiles/(?P<user>.*)/$', views.profiles, name='profiles'),    
     url(r'^buzzs/$', views.buzzs, name='buzzs'),
-    url(r'^buzzs/(?P<user>.*)/$', views.buzzs, name='buzzs')
+    url(r'^buzzs/(?P<user>.*)/$', views.buzzs, name='buzzs'),
+    url(r'^hashtags/$', views.hashtags, name='hashtags'),
+    url(r'^hashtags/(?P<text_hashtag>.*)/$', views.hashtags, name='hashtags')
 ]
 
