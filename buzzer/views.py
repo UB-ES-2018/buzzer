@@ -9,7 +9,6 @@ from django.contrib import messages
 from .models import Profile
 from .models import Buzz
 from django.contrib.auth import login, authenticate, logout
-from itertools import chain
 from .forms import PostForm,ProfileForm
 from .models import Buzz,Profile
 
@@ -107,6 +106,7 @@ def signupView(request):
     else:
         return render(request, "signup.html")
 
+
 def loginView(request):
     username = request.POST.get('username', '')    
     password = request.POST.get('password', '')    
@@ -176,9 +176,9 @@ def profile(request, user=""):  # TEMPORAL
             post.published_date = timezone.now()
             post.save()                        
 
-            return HttpResponseRedirect(reverse("profile", kwargs={'user': user }))
+            return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
-"""
+
 @login_required
 def post_new(request):
     if request.method == "POST":
@@ -188,28 +188,29 @@ def post_new(request):
             post.user = request.user
             post.published_date = timezone.now()
             post.save()
-            return render(request,'testLogin.html')
+            return render(request, 'testLogin.html')
     else:
         form = PostForm()
     return render(request, 'post_edit.html', {'form': form})
-"""
+
+
 def load_image(request):
     instance = get_object_or_404(Profile, user=request.user)
-    if request.method=="POST":
-        form = ProfileForm(request.POST, request.FILES,instance=instance)
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.user = request.user
             instance.image = request.FILES['image']
             instance.save()
-            i = Profile.objects.get(user = request.user)
+            i = Profile.objects.get(user=request.user)
             u = request.user
             # u.profile.image.url
-            print(i.image , u)
+            print(i.image, u)
             user = request.user
             profile = User.objects.filter(username=user)
             print(profile.first())
-            return render(request,'profile.html',{'i':i,'u':u,'profile':profile.first()})
+            return render(request, 'profile.html', {'i': i, 'u': u, 'profile': profile.first()})
     else:
         form = ProfileForm()
     return render(request, 'edit.html', {'form': form})

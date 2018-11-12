@@ -31,10 +31,10 @@ class Profile (models.Model):
     url = models.CharField(max_length=150)  # URL provided by the user in association with their profile
     bio = models.CharField(max_length=150) # general information about user 
     birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
-    image = models.ImageField(default='buzzer_logo.png',verbose_name='Image',upload_to='media',blank=True)
-    def __str__(self):
-        return(self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name)
+    image = models.ImageField(default='buzzer_logo.png', verbose_name='Image', upload_to='media', blank=True)
 
+    def __str__(self):
+        return self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name
 
     def all_fields(self):
         data = self.all_fields_user()
@@ -44,8 +44,7 @@ class Profile (models.Model):
         data += "  bio: " + self.bio
         data += "  birthday: " + str(self.birthday)
         data += "  image: " + str(self.image)
-        return(data)
-
+        return data
 
     def all_fields_user(self):
         data = "key: " + str(self.user.id)
@@ -53,8 +52,6 @@ class Profile (models.Model):
         data += " first name: " + self.user.first_name + " last name: " + self.user.last_name
         data += " email: " + self.user.email
         return data
-
-
 
 
 # Buz: buzzer_buz
@@ -65,17 +62,18 @@ class Buzz (models.Model):
     text = models.TextField(max_length=140) # text of the buzz
     created_at = models.DateTimeField(default=datetime.now, blank=True) # creation date time
     published_date = models.DateTimeField(blank=True, null=True) # publication date time
+    image = models.ImageField(verbose_name='Buzz Image', upload_to='buzzmedia', blank=True)
 
     def __str__(self):
-        #return(self.title)
-        return(self.text[:10])
+        return self.text[:10]
         
     def all_fields(self):        
         data = "id_buzz: " + str(self.id_buzz)
         data += "  id_user: " + str(self.user.id)
         data += "  text: " + self.text
         data += "  created_at: " + str(self.created_at)
-        data += "  published_date: " + str(self.published_date)		
+        data += "  published_date: " + str(self.published_date)
+        data += "  attached image: " + str(self.image)
         return data
 
     def published(self):
