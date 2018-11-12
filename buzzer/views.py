@@ -179,10 +179,10 @@ def profile(request, user=""):  # TEMPORAL
             post.save()        
 
             # find hashtags and set buzzs in its hashtag
-            hashtags_possible = re.findall(r'#(\w+#)|#(\w+)',post.text)
+            hashtags_possible = re.findall(r'(##+)|#(\w+#)|#(\w+)',post.text)
             list_of_hashtags = []
             for pair in hashtags_possible:
-                for i in range(2):	
+                for i in range(3):	
                     if pair[i] != '' and pair[i].find('#')==-1:
                         if pair[i] not in list_of_hashtags:
                             list_of_hashtags.append(pair[i])        
