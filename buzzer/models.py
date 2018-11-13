@@ -62,7 +62,7 @@ class Buzz (models.Model):
     text = models.TextField(max_length=140) # text of the buzz
     created_at = models.DateTimeField(default=datetime.now, blank=True) # creation date time
     published_date = models.DateTimeField(blank=True, null=True) # publication date time
-    image = models.ImageField(verbose_name='Buzz Image', upload_to='buzzmedia', blank=True)
+    file = models.FileField(verbose_name='Buzz Image', upload_to='buzzmedia', blank=True)
 
     def __str__(self):
         return self.text[:10]

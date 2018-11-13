@@ -182,12 +182,15 @@ def profile(request, user=""):  # TEMPORAL
 @login_required
 def post_new(request):
     if request.method == "POST":
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
+
         if form.is_valid():
             post = form.save(commit=False)
             post.user = request.user
             post.published_date = timezone.now()
+            post.file = request.FILES['file']
             post.save()
+
             return render(request, 'testLogin.html')
     else:
         form = PostForm()
