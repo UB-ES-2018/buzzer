@@ -58,15 +58,18 @@
     <br>
 
     <!-- MULTIMEDIA -->
-    {% if buzz.image %}
-      <img src="{{buzz.image.url}}">
-    {% elif buzz.video %}
+    {% if buzz.type == 'img' %}
+      <img src="{{buzz.multimedia.url}}">
+    {% elif buzz.type == 'video' %}
       <video width="320" height="240">
-        <source src="{{buzz.video.url}}">
+        <source src="{{buzz.multimedia.url}}">
       </video>
+    {% elif buzz.type == 'audio' %}
+      <audio controls>
+        <source src="{{buzz.multimedia.url}}" type="audio/mpeg">
+      </audio>
     {% endif %}
 
-    
     <div class="buzz-date">{{ buzz.created_at }} </div>
 
   </div>
