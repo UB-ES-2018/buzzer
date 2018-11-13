@@ -58,15 +58,15 @@
     <br>
 
     <!-- MULTIMEDIA -->
-    {% if buzz.type == 'img' %}
-      <img src="{{buzz.multimedia.url}}">
-    {% elif buzz.type == 'video' %}
+    {% if buzz.file_type == 'image' %}
+      <img src="{{buzz.file.url}}">
+    {% elif buzz.file_type == 'video' %}
       <video width="320" height="240">
-        <source src="{{buzz.multimedia.url}}">
+        <source src="{{buzz.file.url}}">
       </video>
     {% elif buzz.type == 'audio' %}
       <audio controls>
-        <source src="{{buzz.multimedia.url}}" type="audio/mpeg">
+        <source src="{{buzz.file.url}}" type="audio/mpeg">
       </audio>
     {% endif %}
 

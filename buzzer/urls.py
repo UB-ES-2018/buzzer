@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^search/$', views.searchView, name='search'),
     
     # Extras
-    #url(r'^new_post/$', views.post_new, name='post_new'),
+    url(r'^new_post/$', views.post_new, name='post_new'),
     url(r'^profile/(?P<user>.*)/$', views.profile, name='profile'),
 
     # Browser DBs

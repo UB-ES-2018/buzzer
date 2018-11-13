@@ -7,7 +7,7 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Buzz
-        fields = ('text', 'image',)
+        fields = ('text', 'file', )
 
 
 class ProfileForm(forms.ModelForm):

@@ -65,7 +65,7 @@
 	{% block new_buzz %}
 	<div class="invisible form-container">
 	    <h3>Buzzea algo:</h3>
-	    <form action="{% url 'profile' user=user.username %}" method="POST" class="post-form" >{% csrf_token %}
+	    <form action="{% url 'post_new' %}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
 	      {{ form.as_p }}
 	      <button type="submit" class="save btn btn-default">Buzzear</button>
 	    </form>
