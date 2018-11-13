@@ -12,8 +12,10 @@
 <!-- PROFILE INFO -->
   <div class="profile-container">
     <div class="basic-info">
-      <a href="{% url 'profile' user=profile.username %}">
-        <img class="pfp" src="{% static "images/buzzer_logo.png" %}"></a>
+		<a href="{% url 'profile' user=profile.username %}"></a>
+		<a href="{% url 'load_image' %}">
+        <img class="pfp" src="{{ profile.profile.image.url}}"></a>
+		
       <div class="names">
         <a href="{% url 'profile' user=profile.username %}"><h4 class="username">{{profile.profile.screen_name}}</h4></a>
         <h5 class="usertag">@{{profile.username}}</h5>
@@ -44,8 +46,9 @@
   {% for buzz in posts %}
   <div class="buzz">
       <div class="basic-info">
-      <a href="{% url 'profile' user=buzz.user.username %}">
-        <img class="pfp" src="{% static "images/buzzer_logo.png" %}"></a>
+		  <a href="{% url 'load_image' %}">
+        <img class="pfp" src="{{ profile.profile.image.url}}"></a>
+
       <div class="names">
         <a href="{% url 'profile' user=buzz.user.username %}"><h4 class="username">{{buzz.user.profile.screen_name}}</h4></a>
         <h5 class="usertag">@{{buzz.user.username}}</h5>
