@@ -48,7 +48,6 @@
       <div class="basic-info">
 		  <a href="{% url 'load_image' %}">
         <img class="pfp" src="{{ profile.profile.image.url}}"></a>
-
       <div class="names">
         <a href="{% url 'profile' user=buzz.user.username %}"><h4 class="username">{{buzz.user.profile.screen_name}}</h4></a>
         <h5 class="usertag">@{{buzz.user.username}}</h5>
@@ -57,6 +56,20 @@
     <br>
     {{ buzz.text }}
     <br>
+
+    <!-- MULTIMEDIA -->
+    {% if buzz.type == 'img' %}
+      <img src="{{buzz.multimedia.url}}">
+    {% elif buzz.type == 'video' %}
+      <video width="320" height="240">
+        <source src="{{buzz.multimedia.url}}">
+      </video>
+    {% elif buzz.type == 'audio' %}
+      <audio controls>
+        <source src="{{buzz.multimedia.url}}" type="audio/mpeg">
+      </audio>
+    {% endif %}
+
     <div class="buzz-date">{{ buzz.created_at }} </div>
 
   </div>
