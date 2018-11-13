@@ -5,7 +5,7 @@ from .models import Buzz,Profile
 class PostForm(forms.ModelForm):
     class Meta :
         model = Buzz
-        fields = ('text',)
+        fields = ('text', 'image',)
 
 class ProfileForm(forms.ModelForm):
     image = forms.ImageField(required=False)
