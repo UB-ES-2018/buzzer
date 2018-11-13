@@ -1,14 +1,18 @@
 from django import forms
-from .models import Buzz,Profile
+from .models import Buzz, Profile
 
 
 class PostForm(forms.ModelForm):
-    class Meta :
+    file = forms.FileField(required=False)
+
+    class Meta:
         model = Buzz
         fields = ('text', 'image',)
 
+
 class ProfileForm(forms.ModelForm):
     image = forms.ImageField(required=False)
-    class Meta :
+
+    class Meta:
         model = Profile
         fields = ('image',)
