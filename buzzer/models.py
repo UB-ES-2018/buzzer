@@ -30,7 +30,7 @@ class Profile(models.Model):
     url = models.CharField(max_length=150)  # URL provided by the user in association with their profile
     bio = models.CharField(max_length=150)  # general information about user
     birthday = models.DateField(auto_now=False, auto_now_add=False, null=True)  # user's birthday
-    multimedia = models.ImageField(default='buzzer_logo.png', verbose_name='Image', upload_to='media', blank=True)
+    image = models.ImageField(default='buzzer_logo.png', verbose_name='Image', upload_to='media', blank=True)
 
     def __str__(self):
         return self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name
