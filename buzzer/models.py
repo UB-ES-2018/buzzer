@@ -85,7 +85,7 @@ class Buzz (models.Model):
 # Hashtag: buzzer_hashtag
 #    hashtag of buzz
 class Hashtag (models.Model):
-     text = text = models.TextField(max_length=140,primary_key=True) # text of the hashtag (is key)
+     text = models.TextField(max_length=140,primary_key=True) # text of the hashtag (is key)
      buzzs = models.ManyToManyField(Buzz) # list of buzz of hashtag
 
      def __str__(self):
