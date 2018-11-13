@@ -61,7 +61,7 @@ class Buzz(models.Model):
     text = models.TextField(max_length=140)  # text of the buzz
     created_at = models.DateTimeField(default=datetime.now, blank=True)  # creation date time
     published_date = models.DateTimeField(blank=True, null=True)  # publication date time
-    file = models.FileField(verbose_name='Buzz Image', upload_to='buzzmedia', blank=True)
+    file = models.FileField(verbose_name='Buzz File', upload_to='buzzfile', blank=True)
     file_type = models.CharField(max_length=100)
 
     def __str__(self):
@@ -74,7 +74,7 @@ class Buzz(models.Model):
         data += "  text: " + self.text
         data += "  created_at: " + str(self.created_at)
         data += "  published_date: " + str(self.published_date)
-        data += "  attached image: " + str(self.image)
+        data += "  attached file: " + str(self.file)
         return data
 
     def published(self):

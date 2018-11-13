@@ -203,7 +203,7 @@ def post_new(request):
             file = request.FILES['file']
             if file:
                 post.file = file
-            # Getting file type from MIME
+                # Getting file type from MIME
                 post.file_type = file.content_type.split('/')[0]
 
             post.save()
