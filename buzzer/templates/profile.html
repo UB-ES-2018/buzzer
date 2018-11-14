@@ -61,7 +61,7 @@
     {% if buzz.file_type == 'image' %}
       <img src="{{buzz.file.url}}">
     {% elif buzz.file_type == 'video' %}
-      <video width="320" height="240">
+      <video width="320" height="240" controls>
         <source src="{{buzz.file.url}}">
       </video>
     {% elif buzz.type == 'audio' %}
