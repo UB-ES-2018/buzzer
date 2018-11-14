@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-
 <!-- HEAD -->
 {% block title %}Buzzer - {{user.username}}{% endblock %}
+{% load hashtags %}
 {% load static %}
 {% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/profile.css" %}	"> {% endblock %}
 
@@ -52,7 +52,13 @@
       </div>
     </div>
     <br>
-    {{ buzz.text }}
+	  {% for x in buzz.text|lista_hash %}
+		  {% if x.0 == "#"  %}
+			  <a href="{% url 'hashtags' x %}">{{ x }}</a>
+		  {% else %}
+			  {{ x }}
+		  {% endif %}
+	  {% endfor %}
     <br>
     <div class="buzz-date">{{ buzz.created_at }} </div>
 
