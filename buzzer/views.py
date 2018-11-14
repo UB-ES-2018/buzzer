@@ -206,7 +206,10 @@ def post_new(request):
                 # Getting file type from MIME
                 post.file_type = file.content_type.split('/')[0]
 
-            post.save()
+            if isMultimedia(post.file_type):
+                post.save()
+            else:
+                messages.error(request, "El archivo introducido no es un archivo multimedia")
 
         return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
 
@@ -214,6 +217,8 @@ def post_new(request):
         form = PostForm()
     return render(request, 'post_edit.html', {'form': form})
 
+def isMultimedia(type): # Returns true if the file is multimedia, or if there's no file
+    return type == 'image' or type == 'video' or type == 'audio' or type == ''
 
 def load_image(request):
     instance = get_object_or_404(Profile, user=request.user)
