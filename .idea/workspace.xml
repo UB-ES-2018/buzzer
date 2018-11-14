@@ -2,12 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f63a6f02-e5e4-487f-891b-1a2a78036ae9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/buzzer/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/buzzer/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buzzer/migrations/0004_buzz_image.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/buzzer/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/buzzer/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buzzer/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/buzzer/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buzzer/templates/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/buzzer/templates/profile.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buzzer/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/buzzer/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/buzzer/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/buzzer/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,12 +24,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="268" />
+          <entry key="py" value="271" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="268" />
+          <entry key="Python" value="271" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -67,8 +61,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/buzzer/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
-              <caret line="208" selection-start-line="208" selection-end-line="208" />
+            <state relative-caret-position="656">
+              <caret line="229" column="12" selection-start-line="229" selection-start-column="12" selection-end-line="229" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -328,8 +322,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/buzzer/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="208" selection-start-line="208" selection-end-line="208" />
+        <state relative-caret-position="656">
+          <caret line="229" column="12" selection-start-line="229" selection-start-column="12" selection-end-line="229" selection-end-column="12" />
         </state>
       </provider>
     </entry>

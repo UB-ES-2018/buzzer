@@ -227,15 +227,8 @@ def load_image(request):
             instance.image = request.FILES['image']
             instance.save()
 
-            i = Profile.objects.get(user=request.user)
-            u = request.user
-            # u.profile.image.url
-            print(i.image, u)
-            user = request.user
-            profile = User.objects.filter(username=user)
-            print(profile.first())
+            return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
 
-            return render(request, 'profile.html', {'i': i, 'u': u, 'profile': profile.first()})
     else:
         form = ProfileForm()
 
