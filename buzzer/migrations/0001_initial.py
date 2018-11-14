@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('url', models.CharField(max_length=150)),
                 ('bio', models.CharField(max_length=150)),
                 ('birthday', models.DateField(null=True)),
-                ('image', models.ImageField(blank=True, default='buzzer_logo.png', upload_to='media', verbose_name='Image')),
+                ('image', models.ImageField(default='media/buzzer_logo.png', upload_to='media', verbose_name='Image')),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

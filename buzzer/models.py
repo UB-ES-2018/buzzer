@@ -28,9 +28,11 @@ class Profile(models.Model):
     screen_name = models.CharField(max_length=50)  # name that appears on screen (complementary username)
     location = models.CharField(max_length=150)  # defined location for user account’s profile
     url = models.CharField(max_length=150)  # URL provided by the user in association with their profile
-    bio = models.CharField(max_length=150)  # general information about user
-    birthday = models.DateField(auto_now=False, auto_now_add=False, null=True)  # user's birthday
-    image = models.ImageField(default='buzzer_logo.png', verbose_name='Image', upload_to='media', blank=True)
+    bio = models.CharField(max_length=150) # general information about user 
+    birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
+    image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media')
+    def __str__(self):
+        return(self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name)
 
     def __str__(self):
         return self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name
