@@ -10,7 +10,7 @@ from .models import Profile
 from .models import Buzz
 from django.contrib.auth import login, authenticate, logout
 from itertools import chain
-from .forms import PostForm,ProfileForm
+from .forms import PostForm,ProfileForm, Profile2Form
 from .models import Buzz,Profile
 
 
@@ -85,6 +85,7 @@ def signupView(request):
 
         if user is not None:
             # mensage de error ja existeix
+
             return render(request, "signup.html")
 
         else:
@@ -157,14 +158,51 @@ def searchView(request):
         return render(request, 'search.html', args)
     return render(request,'search.html')
 
+def actualizarProfile(request, user=""):
+    form2 = Profile2Form(request.POST)
+    if form2.is_valid():
+        first_name = form2.cleaned_data['first_name']
+        last_name = form2.cleaned_data['last_name']
+        email = form2.cleaned_data['email']
+        location = form2.cleaned_data['location']
+        screen_name = form2.cleaned_data['screen_name']
+        url = form2.cleaned_data['url']
+        bio = form2.cleaned_data['bio']
+        birthday = form2.cleaned_data['birthday']
+        usuario = User.objects.filter(username=request.user).first()
+        profile = usuario.profile
+
+        if first_name != '':
+            usuario.first_name = first_name
+        if last_name != '':
+            usuario.last_name = last_name
+        if email != '':
+            usuario.email = email
+        if screen_name != '':
+            profile.screen_name = screen_name
+        if location != '':
+            profile.location = location
+        if url != '':
+            profile.url = url
+        if bio != '':
+            profile.bio = bio
+        if birthday != '':
+            profile.birthday = birthday
+
+        profile.save()
+        usuario.save()
+
+        return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
+
+
 
 def profile(request, user=""):  # TEMPORAL
     if request.method == "GET":
         profile = User.objects.filter(username=user)
         posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
         form = PostForm()        
-        
-        args = {'posts': posts, 'form': form, 'profile': profile.first()}    
+        form2 = Profile2Form()
+        args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first()}
         
         return render(request, 'profile.html', args)
 
@@ -177,6 +215,7 @@ def profile(request, user=""):  # TEMPORAL
             post.save()                        
 
             return HttpResponseRedirect(reverse("profile", kwargs={'user': user }))
+
 
 """
 @login_required
