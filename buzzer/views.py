@@ -215,10 +215,8 @@ def post_new(request):
 
 # List All Buzzs or List of one hashtag
 def hashtags(request, text_hashtag=""):
-    #print(text_hashtag)
     response = "You aren't admin"
-    p = posts_hashtags(request.user,text_hashtag)
-    #print(p)
+    p = posts_hashtags(text_hashtag)
     if request.user.is_superuser:
         if text_hashtag:
             response = "You're looking for buzz of hashtag from %s <BR>" % text_hashtag
@@ -234,12 +232,12 @@ def hashtags(request, text_hashtag=""):
 
     return render(request,'find_tags.html',{'response':response,'list_post':p,'tag':text_hashtag})
 
-def posts_hashtags(user,tag):
-    posts =Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
+def posts_hashtags(tag):
+    #posts =Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
+    posts = Buzz.objects.all()
     post_list = []
     for post in posts:
         for palabra in post.text.split():
-            #print(palabra,tag)
             if(palabra==tag): # El post tiene el tag
                 post_list.append(post)
                 break

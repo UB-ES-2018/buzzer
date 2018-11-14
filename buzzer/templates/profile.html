@@ -54,7 +54,7 @@
     <br>
 	  {% for x in buzz.text|lista_hash %}
 		  {% if x.0 == "#"  %}
-			  <a href="{% url 'hashtags' x %}">{{ x }}</a>
+			  <a href="{% url 'hashtags' text_hashtag=x %}">{{ x }}</a>
 		  {% else %}
 			  {{ x }}
 		  {% endif %}
