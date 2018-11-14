@@ -200,7 +200,7 @@ def post_new(request):
             post.published_date = timezone.now()
 
             # If there is a file attached we save the file and file type in the database
-            file = request.FILES['file']
+            file = request.FILES.get('file', None)
             if file:
                 post.file = file
                 # Getting file type from MIME
@@ -208,7 +208,7 @@ def post_new(request):
 
             post.save()
 
-        return render(request, 'testLogin.html')
+        return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
 
     else:
         form = PostForm()

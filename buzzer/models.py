@@ -75,6 +75,7 @@ class Buzz(models.Model):
         data += "  created_at: " + str(self.created_at)
         data += "  published_date: " + str(self.published_date)
         data += "  attached file: " + str(self.file)
+
         return data
 
     def published(self):
