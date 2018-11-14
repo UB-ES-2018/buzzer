@@ -22,22 +22,30 @@
       </div>
     </div>
     <br>
+    {% if profile.profile.bio %}
     <div class="bio">
       <p>{{profile.profile.bio}}</p>
     </div>
+    {% endif %}
     <br>
+    {% if profile.profile.url %}
     <div class="url">
       <i class="fas fa-link"></i>
       <a href="http://{{profile.profile.url}}">{{profile.profile.url}}</a>
     </div>
+    {% endif %}
+    {% if profile.profile.location %}
     <div class="gps">
       <i class="fas fa-map-marker-alt"></i>
       <p>{{profile.profile.location}}</p>
     </div>
+    {% endif %}
+    {% if profile.profile.birthday %}
     <div class="birthday">
       <i class="fas fa-birthday-cake"></i>
       <p>Fecha de nacimiento: {{profile.profile.birthday}}</p>
     </div>
+    {% endif %}
   </div>
 
 <!-- BUZZES -->
@@ -59,14 +67,15 @@
 
     <!-- MULTIMEDIA -->
     {% if buzz.file_type == 'image' %}
-      <img src="{{buzz.file.url}}">
+      <img src="{{buzz.file.url}}" class="multimedia">
     {% elif buzz.file_type == 'video' %}
-      <video width="320" height="240" controls>
+      <video width="320" height="240" controls class="multimedia">
         <source src="{{buzz.file.url}}">
       </video>
     {% elif buzz.file_type == 'audio' %}
       <audio controls preload="auto" autobuffer>
         <source src="{{buzz.file.url}}" type="audio/mpeg">
+          Error con el audio
       </audio>
     {% endif %}
 
@@ -77,4 +86,9 @@
 
 </div>
 </div>
+{% endblock %}
+
+<!-- SCRIPTS -->
+{% block scripts %}
+  <script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
 {% endblock %}

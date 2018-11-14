@@ -204,10 +204,7 @@ def post_new(request):
             if file:
                 post.file = file
             # Getting file type from MIME
-                post.file_type = file.content_type.split('/')[0]
-                print("hello there")
-                print(post.file_type)
-            print("hello aqui")
+                post.file_type = file.content_type.split('/')[0]                
             post.save()
 
         return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))

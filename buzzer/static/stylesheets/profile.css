@@ -30,7 +30,7 @@ font-family: 'Open Sans', sans-serif;
     padding-top: 10px;
     padding-right: 15px;
 
-    width: 500px;
+    min-width: 300px;
 }
 
 .profile-container .pfp {
@@ -136,4 +136,25 @@ font-family: 'Open Sans', sans-serif;
 .buzz-container .buzz-date {
     font-style: italic;
     text-align: right;
+}
+
+/****** MULTIMEDIA ******/
+.multimedia {
+    height: 50%;
+    width: 50%;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    max-height: 800px;
+}
+
+.multimedia.big {
+    height: 100%;
+    width: 100%
+}
+
+audio {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
