@@ -193,7 +193,7 @@ def actualizarProfile(request, user=""):
         usuario.save()
 
         return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
-
+    return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
 
 def profile(request, user=""):  # TEMPORAL
