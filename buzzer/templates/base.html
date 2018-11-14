@@ -59,8 +59,15 @@
 	  </div><!-- /.container-fluid -->
 	</nav>
 	{% endblock %}
-	
 
+
+	{% for message in messages %}
+	<div class="alert alert-{{ message.tags}} alert-dismissible" role="alert">
+  	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<span>{{ message }}</span>
+	</div>
+	{% endfor %}
+	
 	<!-- FORM NEW BUZZ -->
 	{% block new_buzz %}
 	<div class="invisible form-container">
