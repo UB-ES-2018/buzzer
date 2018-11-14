@@ -64,8 +64,8 @@
       <video width="320" height="240" controls>
         <source src="{{buzz.file.url}}">
       </video>
-    {% elif buzz.type == 'audio' %}
-      <audio controls>
+    {% elif buzz.file_type == 'audio' %}
+      <audio controls preload="auto" autobuffer>
         <source src="{{buzz.file.url}}" type="audio/mpeg">
       </audio>
     {% endif %}
