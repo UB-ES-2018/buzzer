@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    # circleCI only in master,SP's and US's branches
+    # circleCI only in master,SP's and US's branches.
     branches: 
       only: 
         - master
