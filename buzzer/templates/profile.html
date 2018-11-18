@@ -18,7 +18,7 @@
 		
       <div class="names">
         <a href="{% url 'profile' user=profile.username %}"><h4 class="username">{{profile.profile.screen_name}}</h4></a>
-        <h5 class="usertag">@{{profile.username}}</h5>
+        <h5 class="usertag">@{{profile.usertag}}</h5>
       </div>
     </div>
     <br>
@@ -46,6 +46,9 @@
       <p>Fecha de nacimiento: {{profile.profile.birthday}}</p>
     </div>
     {% endif %}
+    <button type="button" class="btn" data-toggle="modal" data-target="#exampleModalCenter">
+        Editar Perfil
+      </button>
   </div>
 
 <!-- BUZZES -->
@@ -86,6 +89,33 @@
 
 </div>
 </div>
+
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLongTitle" >Editar profile</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'actualizarProfile' user=user.username %}" method="POST" class="post-form" >
+          <div class="modal-body">
+                 {% csrf_token %}
+                 {{ form2.as_p }}
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 <!-- SCRIPTS -->
