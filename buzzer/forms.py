@@ -2,6 +2,7 @@ from django import forms
 from .models import Buzz,Profile
 from django.contrib.auth.models import User
 
+#Formulario para inseratr un buzz con o sin imagen
 class PostForm(forms.ModelForm):
     file = forms.FileField(required=False)
 
@@ -9,7 +10,7 @@ class PostForm(forms.ModelForm):
         model = Buzz
         fields = ('text', 'file', )
 
-
+#Formulario para cambiar la imagen de perfil
 class ProfileForm(forms.ModelForm):
     image = forms.ImageField(required=False)
 
@@ -17,7 +18,7 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = ('image',)
 
-
+#Formulario para cambiar la informacion de perfil
 class Profile2Form(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=150, required=False)

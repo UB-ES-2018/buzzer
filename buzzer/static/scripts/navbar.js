@@ -9,10 +9,10 @@ $(document).ready(function(){
 	
 	$(document).on('click', function(event) {
 		if (!$(event.target).closest('.form-container').length)  {
-	        $(".form-container").addClass("invisible");
-	        $("#unfocus-div").removeClass("unfocus");
-	        $("#unfocus-div").css('height', 0);
-	    }
+			$(".form-container").addClass("invisible");
+			$("#unfocus-div").removeClass("unfocus");
+			$("#unfocus-div").css('height', 0);
+		}
 	});
 
 });

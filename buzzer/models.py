@@ -6,6 +6,7 @@ from datetime import datetime
 
 # User:  auth_user (contrib.auth.User)
 #   user of Buzzer
+#
 #   attributes of User:
 #     id (integer- primary key - autoincrement)
 #     username (varchar(128) - not null)
@@ -18,10 +19,9 @@ from datetime import datetime
 #     is_superuser (boolean - not null)
 #     last_login (datetime - null)
 #     date_joined (datetime - null)
-
-# Profile: buzzer_profile
-
-#   extension User (one to one)
+#
+#     Profile: buzzer_profile
+#       extension User (one to one)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -31,6 +31,7 @@ class Profile(models.Model):
     bio = models.CharField(max_length=150) # general information about user 
     birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
     image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media')
+
     def __str__(self):
         return(self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name)
 
@@ -93,5 +94,3 @@ class Hashtag (models.Model):
 
      def __str__(self):
          return(self.text)
-     
-
