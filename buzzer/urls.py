@@ -25,5 +25,8 @@ urlpatterns = [
     url(r'^buzzs/$', views.buzzs, name='buzzs'),
     url(r'^buzzs/(?P<user>.*)/$', views.buzzs, name='buzzs'),
     url(r'^upload/$', views.load_image, name='load_image'),
+    url(r'^hashtags/$', views.hashtags, name='hashtags'),
+    url(r'^hashtags/(?P<text_hashtag>.*)/$', views.hashtags, name='hashtags')
+
 ]
 

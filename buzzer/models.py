@@ -83,3 +83,15 @@ class Buzz(models.Model):
     def published(self):
         self.published_data = timezone.now()
         self.save()
+
+        
+# Hashtag: buzzer_hashtag
+#    hashtag of buzz
+class Hashtag (models.Model):
+     text = models.TextField(max_length=140,primary_key=True) # text of the hashtag (is key)
+     buzzs = models.ManyToManyField(Buzz) # list of buzz of hashtag
+
+     def __str__(self):
+         return(self.text)
+     
+

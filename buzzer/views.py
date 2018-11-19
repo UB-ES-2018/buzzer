@@ -7,12 +7,10 @@ from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile
-from .models import Buzz
+from .models import Profile, Buzz, Hashtag
+from .forms import PostForm, ProfileForm, Profile2Form
+from itertools import chain
 from django.contrib.auth import login, authenticate, logout
-from .forms import PostForm,ProfileForm, Profile2Form
-from .models import Buzz,Profile
-
 
 # Create your views here.
 def index(request):
@@ -213,6 +211,7 @@ def profile(request, user=""):  # TEMPORAL
         form2 = Profile2Form()
         args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first()}
 
+
         return render(request, 'profile.html', args)
 
     if request.method == "POST":
@@ -223,6 +222,21 @@ def profile(request, user=""):  # TEMPORAL
             post.user = request.user
             post.published_date = timezone.now()
             post.save()
+            # find hashtags and set buzzs in its hashtag
+            hashtags_possible = re.findall(r'(##+)|#(\w+#)|#(\w+)',post.text)
+            list_of_hashtags = []
+            for pair in hashtags_possible:
+                for i in range(3):	
+                    if pair[i] != '' and pair[i].find('#')==-1:
+                        if pair[i] not in list_of_hashtags:
+                            list_of_hashtags.append(pair[i])        
+            for tag in list_of_hashtags:
+                if Hashtag.objects.filter(text = tag).exists():
+                    hashtag = Hashtag.objects.filter(text = tag)[0]
+                else: 
+                    hashtag = Hashtag.objects.create(text = tag)
+                hashtag.buzzs.add(post)
+                hashtag.save()
 
             return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
@@ -256,6 +270,7 @@ def post_new(request):
         form = PostForm()
     return render(request, 'post_edit.html', {'form': form})
 
+
 def isMultimedia(type): # Returns true if the file is multimedia, or if there's no file
     return type == 'image' or type == 'video' or type == 'audio' or type == ''
 
@@ -277,3 +292,37 @@ def load_image(request):
         form = ProfileForm()
 
     return render(request, 'edit.html', {'form': form})
+
+
+
+# List All Buzzs or List of one hashtag
+def hashtags(request, text_hashtag=""):
+    #print(text_hashtag)
+    response = "You aren't admin"
+    p = posts_hashtags(request.user,text_hashtag)
+    #print(p)
+    if request.user.is_superuser:
+        if text_hashtag:
+            response = "You're looking for buzz of hashtag from %s <BR>" % text_hashtag
+            list_of_hashtags = Hashtag.objects.filter(text=text_hashtag)
+
+            for hashtaglist in list_of_hashtags:
+                list_of_buzzs = hashtaglist.buzzs.all()
+                response = response + '<BR> <li>' + '<BR> <li>'.join([Buzz.all_fields(buzz) for buzz in list_of_buzzs])
+        else:
+            response = "You're looking all hashtags"
+            list_of_hashtags = Hashtag.objects.filter()
+            response = response + '<BR> <li>' + '<BR> <li>'.join([str(hashtag) for hashtag in list_of_hashtags])
+
+    return render(request,'find_tags.html',{'response':response,'list_post':p,'tag':text_hashtag})
+
+def posts_hashtags(user,tag):
+    posts =Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
+    post_list = []
+    for post in posts:
+        for palabra in post.text.split():
+            #print(palabra,tag)
+            if(palabra==tag): # El post tiene el tag
+                post_list.append(post)
+                break
+    return post_list
