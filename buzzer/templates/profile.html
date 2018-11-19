@@ -12,30 +12,43 @@
 <!-- PROFILE INFO -->
   <div class="profile-container">
     <div class="basic-info">
-      <a href="{% url 'profile' user=profile.username %}">
-        <img class="pfp" src="{% static "images/buzzer_logo.png" %}"></a>
+		<a href="{% url 'profile' user=profile.username %}"></a>
+		<a href="{% url 'load_image' %}">
+        <img class="pfp" src="{{ profile.profile.image.url}}"></a>
+
       <div class="names">
         <a href="{% url 'profile' user=profile.username %}"><h4 class="username">{{profile.profile.screen_name}}</h4></a>
         <h5 class="usertag">@{{profile.username}}</h5>
       </div>
     </div>
     <br>
+    {% if profile.profile.bio %}
     <div class="bio">
       <p>{{profile.profile.bio}}</p>
     </div>
+    {% endif %}
     <br>
+    {% if profile.profile.url %}
     <div class="url">
       <i class="fas fa-link"></i>
       <a href="http://{{profile.profile.url}}">{{profile.profile.url}}</a>
     </div>
+    {% endif %}
+    {% if profile.profile.location %}
     <div class="gps">
       <i class="fas fa-map-marker-alt"></i>
       <p>{{profile.profile.location}}</p>
     </div>
+    {% endif %}
+    {% if profile.profile.birthday %}
     <div class="birthday">
       <i class="fas fa-birthday-cake"></i>
       <p>Fecha de nacimiento: {{profile.profile.birthday}}</p>
     </div>
+    {% endif %}
+    <button type="button" class="btn" data-toggle="modal" data-target="#exampleModalCenter">
+        Editar Perfil
+      </button>
   </div>
 
 <!-- BUZZES -->
@@ -44,8 +57,8 @@
   {% for buzz in posts %}
   <div class="buzz">
       <div class="basic-info">
-      <a href="{% url 'profile' user=buzz.user.username %}">
-        <img class="pfp" src="{% static "images/buzzer_logo.png" %}"></a>
+		  <a href="{% url 'load_image' %}">
+        <img class="pfp" src="{{ profile.profile.image.url}}"></a>
       <div class="names">
         <a href="{% url 'profile' user=buzz.user.username %}"><h4 class="username">{{buzz.user.profile.screen_name}}</h4></a>
         <h5 class="usertag">@{{buzz.user.username}}</h5>
@@ -60,6 +73,21 @@
 		  {% endif %}
 	  {% endfor %}
     <br>
+
+    <!-- MULTIMEDIA -->
+    {% if buzz.file_type == 'image' %}
+      <img src="{{buzz.file.url}}" class="multimedia">
+    {% elif buzz.file_type == 'video' %}
+      <video width="320" height="240" controls class="multimedia">
+        <source src="{{buzz.file.url}}">
+      </video>
+    {% elif buzz.file_type == 'audio' %}
+      <audio controls preload="auto" autobuffer>
+        <source src="{{buzz.file.url}}" type="audio/mpeg">
+          Error con el audio
+      </audio>
+    {% endif %}
+
     <div class="buzz-date">{{ buzz.created_at }} </div>
 
   </div>
@@ -67,4 +95,36 @@
 
 </div>
 </div>
+
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLongTitle" >Editar profile</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'actualizarProfile' user=user.username %}" method="POST" class="post-form" >
+          <div class="modal-body">
+                 {% csrf_token %}
+                 {{ form2.as_p }}
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+<!-- SCRIPTS -->
+{% block scripts %}
+  <script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
 {% endblock %}

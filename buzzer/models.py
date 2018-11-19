@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import datetime 
+from datetime import datetime
 
 
 # User:  auth_user (contrib.auth.User)
@@ -23,27 +23,29 @@ from datetime import datetime
 
 #   extension User (one to one)
 
-class Profile (models.Model):
-
+class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     screen_name = models.CharField(max_length=50)  # name that appears on screen (complementary username)
     location = models.CharField(max_length=150)  # defined location for user account’s profile
     url = models.CharField(max_length=150)  # URL provided by the user in association with their profile
     bio = models.CharField(max_length=150) # general information about user 
-    birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday     
+    birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
+    image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media')
     def __str__(self):
         return(self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name)
 
+    def __str__(self):
+        return self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name
 
     def all_fields(self):
         data = self.all_fields_user()
-        data += "  screen_name: " + self.screen_name        
+        data += "  screen_name: " + self.screen_name
         data += "  location: " + self.location
         data += "  url: " + self.url
         data += "  bio: " + self.bio
         data += "  birthday: " + str(self.birthday)
-        return(data)
-
+        data += "  image: " + str(self.image)
+        return data
 
     def all_fields_user(self):
         data = "key: " + str(self.user.id)
@@ -53,35 +55,36 @@ class Profile (models.Model):
         return data
 
 
-
-
 # Buz: buzzer_buz
 #   posts of buzzer
-class Buzz (models.Model):
-    id_buzz = models.AutoField(primary_key=True) # id of buzz: automatic incremental
-    user = models.ForeignKey(User, on_delete=models.CASCADE) # id of user who creates the buzz
-    text = models.TextField(max_length=140) # text of the buzz
-    created_at = models.DateTimeField(default=datetime.now, blank=True) # creation date time
-    published_date = models.DateTimeField(blank=True, null=True) # publication date time
+class Buzz(models.Model):
+    id_buzz = models.AutoField(primary_key=True)  # id of buzz: automatic incremental
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # id of user who creates the buzz
+    text = models.TextField(max_length=140)  # text of the buzz
+    created_at = models.DateTimeField(default=datetime.now, blank=True)  # creation date time
+    published_date = models.DateTimeField(blank=True, null=True)  # publication date time
+    file = models.FileField(verbose_name='Buzz File', upload_to='buzzfile', blank=True)
+    file_type = models.CharField(max_length=100)
 
     def __str__(self):
-        #return(self.title)
-        return(self.text[:10])
-        
-    def all_fields(self):        
+
+        return self.text[:10]
+
+    def all_fields(self):
         data = "id_buzz: " + str(self.id_buzz)
         data += "  id_user: " + str(self.user.id)
         data += "  text: " + self.text
         data += "  created_at: " + str(self.created_at)
-        data += "  published_date: " + str(self.published_date)		
+        data += "  published_date: " + str(self.published_date)
+        data += "  attached file: " + str(self.file)
+
         return data
 
     def published(self):
         self.published_data = timezone.now()
         self.save()
 
-
-
+        
 # Hashtag: buzzer_hashtag
 #    hashtag of buzz
 class Hashtag (models.Model):
@@ -91,8 +94,4 @@ class Hashtag (models.Model):
      def __str__(self):
          return(self.text)
      
-
-
-
-
 
