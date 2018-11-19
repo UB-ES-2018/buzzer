@@ -50,6 +50,7 @@
 	    		<li><a href="{% url 'profile' user=user.username %}">{{ user.username }}</a></li>
 	    		<li id="buzz-button"><a>Buzzear</a></li>
 	        	<li><a href="{% url 'logout' %}">Logout</a></li>
+                <li><a href="" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-search"></i></a></li>
 	        {% else %}
 	      		<li><a href="{% url 'login' %}">Login</a></li>              
 	      		<li><a href="{% url 'signup' %}">Sign up</a></li>
@@ -81,6 +82,30 @@
 	
 	<!-- ACTUAL CONTENT -->
 	{% block content %}{% endblock %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">INTRODUEIX EL TEXT A CERCAR</h5>
+
+          </div>
+        <form action="{% url 'search' %}" method="post">
+          <div class="modal-body">
+
+                {% csrf_token %}
+                <input type="text" class="form-control" name="search_text" placeholder="tu consulta">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+            </form>
+        </div>
+      </div>
+    </div>
 
 	<script
   src="https://code.jquery.com/jquery-3.3.1.min.js"
