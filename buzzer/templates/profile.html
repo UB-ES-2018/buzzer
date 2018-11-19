@@ -15,10 +15,10 @@
 		<a href="{% url 'profile' user=profile.username %}"></a>
 		<a href="{% url 'load_image' %}">
         <img class="pfp" src="{{ profile.profile.image.url}}"></a>
-		
+
       <div class="names">
         <a href="{% url 'profile' user=profile.username %}"><h4 class="username">{{profile.profile.screen_name}}</h4></a>
-        <h5 class="usertag">@{{profile.usertag}}</h5>
+        <h5 class="usertag">@{{profile.username}}</h5>
       </div>
     </div>
     <br>
