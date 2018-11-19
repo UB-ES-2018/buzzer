@@ -1,12 +1,9 @@
 body {
-
-background: linear-gradient(110deg, #fdcd3b 60%, #ffed4b 60%);
-
+    background: linear-gradient(110deg, #fdcd3b 60%, #ffed4b 60%);
 }
 
 
 #login-container {
-
 	position: absolute;
     top: 50%;
     left: 50%;

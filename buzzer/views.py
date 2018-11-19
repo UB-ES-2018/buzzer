@@ -35,7 +35,6 @@ def users(request, user=""):
             list_of_users = User.objects.filter()
             response = response + '<BR> <li>' + '<BR> <li>'.join(
                 [str(user.id) + " - " + str(user) for user in list_of_users])
-
     return HttpResponse(response)
 
 
@@ -53,7 +52,6 @@ def profiles(request, user=""):
             list_of_users = User.objects.filter()
             response = response + '<BR> <li>' + '<BR> <li>'.join(
                 [Profile.all_fields(user.profile) for user in list_of_users])
-
     return HttpResponse(response)
 
 
@@ -142,14 +140,12 @@ def userSearch(request, search_text):
     usernameSearch = Profile.objects.filter(user__username__contains=search_text)
     profileSearch = Profile.objects.filter(screen_name__contains=search_text)
     fullSearch = usernameSearch | profileSearch
-
     response = [s for s in fullSearch]
     return response
 
 
 def buzzSearch(request, search_text):
     search = Buzz.objects.filter(text__contains=search_text)
-
     response = [s for s in search]
     return response
 

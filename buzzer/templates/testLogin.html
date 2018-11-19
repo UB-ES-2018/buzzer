@@ -10,18 +10,20 @@
 {% block content %}
 
 <div id="login-container">
-  {% if user.is_authenticated %}
-    <h3>Hola {{ user.username }}! </h3>
-  {% else %}
-    <h3> Hola desconocido! </h3>
-  {% endif %}
-  <form action="{% url 'search' %}" method="post">
-    {% csrf_token %}
-    <label for="usr">Consulta:</label>
-    <input type="text" class="form-control" name="search_text" placeholder="tu consulta">
+    {% if user.is_authenticated %}
+        <h3>Hola {{ user.username }}! </h3>
+    {% else %}
+        <h3> Hola desconocido! </h3>
+    {% endif %}
 
-    <input type="submit" value="Submit">
-  </form>
+    <form action="{% url 'search' %}" method="post">
+        {% csrf_token %}
+        <label for="usr">Consulta:</label>
+
+        <input type="text" class="form-control" name="search_text" placeholder="tu consulta">
+
+        <input type="submit" value="Submit">
+    </form>
 		
 </div>
 {% endblock %}

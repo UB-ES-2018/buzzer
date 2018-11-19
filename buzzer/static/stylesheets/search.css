@@ -27,14 +27,12 @@ background: linear-gradient(110deg, #fdcd3b 60%, #ffed4b 60%);
 }
 
 .container{
-
     margin-left: 0px;
 }
 
 /***  BUZZ CONTAINER ***/
 
 .buzz-container {
-
     width: 100%;
     min-width: 800px;
     border: 4px solid #ccc;
@@ -45,8 +43,6 @@ background: linear-gradient(110deg, #fdcd3b 60%, #ffed4b 60%);
     padding-right: 20px;
     padding-top: 15px;
     padding-bottom: 15px;
-
-
 }
 
 .buzz-container .form-container {
