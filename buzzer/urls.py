@@ -13,8 +13,9 @@ urlpatterns = [
     url(r'^search/$', views.searchView, name='search'),
     
     # Extras
-    #url(r'^new_post/$', views.post_new, name='post_new'),
+    url(r'^new_post/$', views.post_new, name='post_new'),
     url(r'^profile/(?P<user>.*)/$', views.profile, name='profile'),
+    url(r'^actualizarProfile/(?P<user>.*)/$', views.actualizarProfile, name='actualizarProfile'),
 
     # Browser DBs
     url(r'^users/$', views.users, name='users'),
@@ -22,6 +23,10 @@ urlpatterns = [
     url(r'^profiles/$', views.profiles, name='profiles'),
     url(r'^profiles/(?P<user>.*)/$', views.profiles, name='profiles'),    
     url(r'^buzzs/$', views.buzzs, name='buzzs'),
-    url(r'^buzzs/(?P<user>.*)/$', views.buzzs, name='buzzs')
+    url(r'^buzzs/(?P<user>.*)/$', views.buzzs, name='buzzs'),
+    url(r'^upload/$', views.load_image, name='load_image'),
+    url(r'^hashtags/$', views.hashtags, name='hashtags'),
+    url(r'^hashtags/(?P<text_hashtag>.*)/$', views.hashtags, name='hashtags')
+
 ]
 

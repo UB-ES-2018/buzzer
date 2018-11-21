@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     # circleCI only in master,SP's and US's branches
-    branches: 
-      only: 
+    branches:
+      only:
         - master
         - /SP-.*/
         - /US-.*/
