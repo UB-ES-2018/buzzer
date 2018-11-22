@@ -2,13 +2,13 @@ version: 2
 jobs:
   build:
     # circleCI only in master,SP's and US's branches
-    branches: 
-      only: 
+    branches:
+      only:
         - master
         - /SP-.*/
         - /US-.*/
     docker:
-      - image: circleci/python:3.5.2
+      - image: circleci/python:3.5-stretch-node-browsers-legacy
     working_directory: ~/tmp
     # steps to be execute
     steps:

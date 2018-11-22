@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+<!-- HEAD -->
+{% block title %}Buzzer - Test login{% endblock %}
+{% load static %}
+{% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/login.css" %}"> {% endblock %}
+
+
+<!-- BODY -->
+{% block content %}
+
+    <div id="login-container">
+        <h3>Upload a picture</h3>
+        <form  role="form"  enctype="multipart/form-data" action="" method="POST" id="upload-image-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-warning">Load Image</button>
+        </form>
+    </div>
+
+{% endblock %}

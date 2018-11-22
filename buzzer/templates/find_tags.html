@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+<!-- HEAD -->
+{% block title %}Buzzer - Test FIND TAGS{% endblock %}
+{% load hashtags %}
+{% load static %}
+{% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/profile.css" %}	"> {% endblock %}
+
+
+<!-- BODY -->
+{% block content %}
+    <div class="container">
+        <div class="buzz-container">
+            <h3>Lista de BUZZS con Hashtag {{ tag }}</h3>
+            {% for buzz in list_post %}
+                <div class="buzz">
+
+                    <div class="basic-info">
+                        <a href="{% url 'profile' user=buzz.user.username %}">
+                            <img class="pfp" src="{% static "images/buzzer_logo.png" %}"></a>
+                        <div class="names">
+                            <a href="{% url 'profile' user=buzz.user.username %}"><h4 class="username">{{buzz.user.profile.screen_name}}</h4></a>
+                            <h5 class="usertag">@{{buzz.user.username}}</h5>
+                        </div>
+                    </div>
+                    <br>
+
+                    {% for x in buzz.text|lista_hash %}
+                        {% if x.0 == "#"  %}
+                            <a href="{% url 'hashtags' x %}">{{ x }}</a>
+                        {% else %}
+                            {{ x }}
+                        {% endif %}
+                    {% endfor %}
+                    <br>
+
+                    <div class="buzz-date">{{ buzz.created_at }} </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
