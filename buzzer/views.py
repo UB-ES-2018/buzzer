@@ -322,3 +322,82 @@ def posts_hashtags(user,tag):
                 post_list.append(post)
                 break
     return post_list
+
+# define equal in lists
+def equal_list(list1,list2):
+    list1.sort()
+    list2.sort()
+    equals = True
+    if len(list1) != len(list2):
+        equals = False
+    else:
+        for i in range(len(list1)):
+            if list1[i] != list2[i]:
+                equals = False
+                break
+
+    return equals
+
+# search list of chats of one user
+def search_chats(user_name):
+    userchat = User.objects.get(username=user_name)
+    list_of_chats = userchat.chat_set.all()
+    return list_of_chats
+
+# create a chat and return
+def create_chat(users_list,chat_name=""):     
+    if chat_name:
+        chat = Chat.objects.create(name=chat_name)
+    else:
+        for user in users_list:
+            chat_name += str(user.username) 
+        chat = Chat.objects.create(name=chat_name)
+    chat.members.set(users_list)
+ 
+    chat.save()
+
+    return chat
+
+# search chat of a list of users  (if the chat doesnt exist it will be created)
+#    enter a list of names of all users (first sender)
+#    return chat 
+def search_chat(list_of_user_names):
+    list_of_chats = search_chats(list_of_user_names[0])
+    found = False
+    list_of_member_names = []
+    
+    for chat in list_of_chats:
+        list_of_member_names = []
+        for member in  chat.members.all():
+            list_of_member_names.append(member.username)
+        if equal_list(list_of_member_names,list_of_user_names):
+            found= True
+            chat_return = chat
+            break
+
+    if (not found):
+       list_of_users = []
+       for user_name in list_of_user_names:
+           user = User.objects.get(username=user_name)
+           list_of_users.append(user)
+       chat_return = create_chat(list_of_users)
+    
+    return chat_return
+
+# create message 
+def create_message(chat_id,user_name,text_message):
+    chat = Chat.objects.get(id_chat=chat_id)
+    user = User.objects.get(username = user_name)
+    message = Message.objects.create(chat=chat,user=user)
+    message.date = timezone.now()
+    message.content = text_message
+    message.save()
+    return message 
+
+# return all messages of a chat ordered by date
+def messages_chat(chat_id):
+    chat = Chat.objects.get(id_chat=chat_id)
+    #list_of_messages = sorted(chat.messages.all , key = lambda x: x.object.time)
+    list_of_messages = chat.message_set.all()
+
+    return list_of_messages
