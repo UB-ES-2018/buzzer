@@ -406,11 +406,14 @@ def messages_chat(chat_id):
 def look_for_new_messages(user_name):
     user = User.objects.get(username=user_name)
     chats = userchat.chat_set.all()
-
+    notify = []
     for chat in chats:
         # Get all the messages of the chat
         # Save all the messages that arent notified
-        break
+        msgs = self.messages_chat(chat.id_chat)
+        for msg in msgs:
+            if msg.notified == true:
+                notify.append(msg)
 
-    # return number of messages
-    return 0
+    # return messages that need notification
+    return notify
