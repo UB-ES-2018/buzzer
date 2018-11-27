@@ -60,9 +60,13 @@
         {% endif %}
 
 
-        <button type="button" class="btn" data-toggle="modal" data-target="#exampleModalCenter">
+        {% if user.username == profile.username %}
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
             Editar Perfil
         </button>
+        {% else %}
+        <a href="{% url 'messages' %}" class="btn btn-warning">Mensaje</a>
+        {% endif %}
 
     </div>
 

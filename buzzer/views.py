@@ -1,4 +1,4 @@
-from AptUrl.Helpers import _
+#from AptUrl.Helpers import _
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -337,6 +337,16 @@ def equal_list(list1,list2):
                 break
 
     return equals
+
+
+@login_required
+def private_messages(request):
+    if request.method == "GET":
+        user = request.user
+        chat_list = search_chats(user.username)
+        args = { "chats" : chat_list }
+    
+        return render(request, "messages.html", args)
 
 # search list of chats of one user
 def search_chats(user_name):
