@@ -422,7 +422,7 @@ def look_for_new_messages(user_name):
 
         for i in range(len(messages)):
             # If the message is not notified
-            if messages[i].notified == false:
+            if messages[i].notified == False:
                 # We add it to the notify dictionary
                 notify[i] = messages[i]
 
@@ -431,5 +431,12 @@ def look_for_new_messages(user_name):
 
 
 # Gets the messages that we need to notify and we wrap them to return a jsonresponse
-def notify_new_messages(user_name):
+def notify_messages(user_name):
     return JsonResponse(look_for_new_messages(user_name))
+
+
+# Mark all the messages on a dictionary as notified
+def mark_as_notified(messages):
+    for key, msg in messages.items():
+        msg.notified = True;
+        msg.save()
