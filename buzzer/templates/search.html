@@ -11,8 +11,10 @@
 
 <div class="panel panel-default" id="search_var">
     <div id="search_text">
-        {% if not search_text  %}
+        {% if not tag  %}
             <h3>SEARCH: --</h3>
+        {% elif not search_text %}
+            <h3>SEARCH: {{ tag }}</h3>
         {% else %}
             <h3>SEARCH: {{ search_text }}</h3>
         {% endif %}
@@ -22,6 +24,7 @@
 <ul class="nav nav-tabs" id="search_nav">
     <li class="active"><a onclick="changeBlockView('buzzs-button')" data-toggle="tab" id="buzzs-button">BUZZERS</a></li>
     <li><a onclick="changeBlockView('users-button')" data-toggle="tab" id="users-button">USERS</a></li>
+    <li><a onclick="changeBlockView('hastags-button')" data-toggle="tab" id="hashtags-button">HASHTAG</a></li>
 </ul>
 <div id="last_tab"></div>
 
@@ -88,10 +91,52 @@
 
 </div>
 
+<div class="buzz-container" id="hashtags-container" style="display: none" >
+    {% if not hashtags %}
+        <h3>No results in users for:<br>  -->{{ tag }}</h3>
+    {% else %}
+        {% for buzz in hashtags %}
+            <div class="buzz">
+                <div class="basic-info">
+                    <a href="{% url 'profile' user=buzz.user.username %}">
+                        <img class="pfp" src="{% static "images/buzzer_logo.png" %}"></a>
+                    <div class="names">
+                        <a href="{% url 'profile' user=buzz.user.username %}"><h4 class="username">{{buzz.user.profile.screen_name}}</h4></a>
+                        <h5 class="usertag">@{{buzz.user.username}}</h5>
+                    </div>
+                </div>
+                <br>
+
+                {% for x in buzz.text %}
+                    {% if x.0 == "#"  %}
+                        <a href="{% url 'hashtags' x %}">{{ x }}</a>
+                    {% else %}
+                        {{ x }}
+                    {% endif %}
+                {% endfor %}
+                <br>
+
+                <div class="buzz-date">{{ buzz.created_at }} </div>
+
+            </div>
+        {% endfor %}
+    {% endif %}
+
+</div>
+
 {% endblock %}
 
 {% block moreJavascript %}
 <script type="text/javascript">
+
+    $(document).ready(function() {
+        if ('{{ hashtag }}' == 'True') {
+            document.getElementById("buzzers-container").style.display = "none";
+            document.getElementById("users-container").style.display = "none";
+            document.getElementById("hashtags-container").style.display = "inline-block";
+            // Fer que la tab hashtag estigui remarcada
+        }       
+    });
 
     function changeBlockView($id) {
 
@@ -99,12 +144,21 @@
 
             document.getElementById("buzzers-container").style.display = "inline-block";
             document.getElementById("users-container").style.display = "none";
+            document.getElementById("hashtags-container").style.display = "none";
 
         }
         else if ($id === "users-button") {
 
             document.getElementById("buzzers-container").style.display = "none";
+            document.getElementById("hashtags-container").style.display = "none";
             document.getElementById("users-container").style.display = "inline-block";
+
+        }
+        else if ($id === "hastags-button") {
+
+            document.getElementById("buzzers-container").style.display = "none";
+            document.getElementById("users-container").style.display = "none";
+            document.getElementById("hashtags-container").style.display = "inline-block";
 
         }
 
