@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+<!-- HEAD -->
+{% block title %}Buzzer - Test login{% endblock %}
+{% load static %}
+{% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/login.css" %}"> {% endblock %}
+
+
+<!-- BODY -->
+{% block content %}
+
+<div id="login-container">
+<table id ='myTable'>
+    <thead>
+	</thead>
+    <tbody >
+         {% for b in json %}
+             <tr>
+             <td>{{b}}</td>
+             </tr>
+         {% endfor %}
+    </tbody >
+</table>
+</div>
+<script type="text/javascript" src="{{STATIC_URL}}jquery-1.11.3.min.js"> </script>
+
+<script type="text/javascript">
+    $( document ).ready(function() {
+       setInterval(function(){
+            $.getJSON('json/',
+                    function (data) {
+                        var json = data['json'];
+                        var tr;
+                         $('#myTable tbody').html("");
+                        for (var i = 0; i < json.length; i++) {
+                            tr = $('<tr/>');
+                            tr.append("<td>" + json[i]+ "</td>");
+                             $('#myTable tbody').append(tr);
+
+                        }
+                    });
+       },5000);
+    });
+
+</script>
+
+{% endblock %}
