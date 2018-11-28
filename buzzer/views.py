@@ -74,6 +74,7 @@ def buzzs(request, user=""):
 
 
 def signupView(request):
+    missatges = []
     if request.method == 'POST':
 
         username = request.POST.get('username', '')
@@ -87,8 +88,8 @@ def signupView(request):
 
         if user is not None:
             # mensage de error ja existeix
-
-            return render(request, "signup.html")
+            missatges.append('El usuario ya existe')
+            return render(request, "signup.html", args = {'missatges':missatges})
 
         else:
             user = User.objects.create_user(username=username, password=password)
@@ -105,6 +106,7 @@ def signupView(request):
                     # Redirect to a success page.
                     return HttpResponseRedirect(reverse('index'))
             # mensage de error
+            missatges.append('No se ha podido agregar el usuario')
             return render(request, "signup.html")
 
     else:
@@ -112,6 +114,7 @@ def signupView(request):
 
 
 def loginView(request):
+    missatges=[]
     username = request.POST.get('username', '')
     password = request.POST.get('password', '')
     user = authenticate(username=username, password=password)
@@ -125,7 +128,11 @@ def loginView(request):
             raise forms.ValidationError(_("This account is banned."), code='inactive', )
     else:
         # Show an error page
-        return render(request, 'login.html')
+        args={}
+        if request.method == 'POST':
+            missatges.append('user no existe')
+            args = {'missatges': missatges}
+        return render(request, 'login.html', args)
 
 
 @login_required
@@ -166,24 +173,23 @@ def hashtags(request, text_hashtag=""):
     response = "You aren't admin"
     p = posts_hashtags(request.user,text_hashtag)
 
-    if request.user.is_superuser:
-        if text_hashtag:
-            response = "You're looking for buzz of hashtag from %s <BR>" % text_hashtag
-            list_of_hashtags = Hashtag.objects.filter(text=text_hashtag)
+    if text_hashtag:
+        response = "You're looking for buzz of hashtag from %s <BR>" % text_hashtag
+        list_of_hashtags = Hashtag.objects.filter(text=text_hashtag)
 
-            for hashtaglist in list_of_hashtags:
-                list_of_buzzs = hashtaglist.buzzs.all()
-                response = response + '<BR> <li>' + '<BR> <li>'.join([Buzz.all_fields(buzz) for buzz in list_of_buzzs])
-        else:
-            response = "You're looking all hashtags"
-            list_of_hashtags = Hashtag.objects.filter()
-            response = response + '<BR> <li>' + '<BR> <li>'.join([str(hashtag) for hashtag in list_of_hashtags])
+        for hashtaglist in list_of_hashtags:
+            list_of_buzzs = hashtaglist.buzzs.all()
+            response = response + '<BR> <li>' + '<BR> <li>'.join([Buzz.all_fields(buzz) for buzz in list_of_buzzs])
+    else:
+        response = "You're looking all hashtags"
+        list_of_hashtags = Hashtag.objects.filter()
+        response = response + '<BR> <li>' + '<BR> <li>'.join([str(hashtag) for hashtag in list_of_hashtags])
+
     return searchView(request, True, {'response':response,'hashtags':p,'tag':text_hashtag, 'hashtag':True})
 
 
 def searchView(request, hashtag_search = False, args = None):
     missatges = []
-    missatges.append('hola')
     search_text = request.POST.get('search_text')
     if (hashtag_search):
         users = userSearch(request, args['tag'])
