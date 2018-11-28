@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
@@ -10,6 +10,7 @@ from .models import Profile, Buzz, Hashtag
 from .forms import PostForm, ProfileForm, Profile2Form
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
+
 
 # Create your views here.
 def index(request):
@@ -160,6 +161,7 @@ def searchView(request):
 
     return render(request, 'search.html')
 
+
 def actualizarProfile(request, user=""):
     form2 = Profile2Form(request.POST)
     if form2.is_valid():
@@ -236,7 +238,6 @@ def profile(request, user=""):  # TEMPORAL
             return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
 
-
 @login_required
 def post_new(request):
     if request.method == "POST":
@@ -269,6 +270,7 @@ def post_new(request):
 def isMultimedia(type): # Returns true if the file is multimedia, or if there's no file
     return type == 'image' or type == 'video' or type == 'audio' or type == ''
 
+
 def load_image(request):
     instance = get_object_or_404(Profile, user=request.user)
 
@@ -287,7 +289,6 @@ def load_image(request):
         form = ProfileForm()
 
     return render(request, 'edit.html', {'form': form})
-
 
 
 # List All Buzzs or List of one hashtag
@@ -311,6 +312,7 @@ def hashtags(request, text_hashtag=""):
 
     return render(request,'find_tags.html',{'response':response,'list_post':p,'tag':text_hashtag})
 
+
 def posts_hashtags(user,tag):
     posts =Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
     post_list = []
@@ -321,6 +323,7 @@ def posts_hashtags(user,tag):
                 post_list.append(post)
                 break
     return post_list
+
 
 # define equal in lists
 def equal_list(list1,list2):
@@ -337,11 +340,13 @@ def equal_list(list1,list2):
 
     return equals
 
+
 # search list of chats of one user
 def search_chats(user_name):
     userchat = User.objects.get(username=user_name)
     list_of_chats = userchat.chat_set.all()
     return list_of_chats
+
 
 # create a chat and return
 def create_chat(users_list,chat_name=""):
@@ -356,6 +361,7 @@ def create_chat(users_list,chat_name=""):
     chat.save()
 
     return chat
+
 
 # search chat of a list of users  (if the chat doesnt exist it will be created)
 #    enter a list of names of all users (first sender)
@@ -383,6 +389,7 @@ def search_chat(list_of_user_names):
 
     return chat_return
 
+
 # create message
 def create_message(chat_id,user_name,text_message):
     chat = Chat.objects.get(id_chat=chat_id)
@@ -393,6 +400,7 @@ def create_message(chat_id,user_name,text_message):
     message.save()
     return message
 
+
 # return all messages of a chat ordered by date
 def messages_chat(chat_id):
     chat = Chat.objects.get(id_chat=chat_id)
@@ -401,18 +409,27 @@ def messages_chat(chat_id):
 
     return list_of_messages
 
-# Returns the number of not notified messages af a user
+
+# Returns a dictionary of not notified messages of a user
 def look_for_new_messages(user_name):
-    user = User.objects.get(username=user_name)
-    chats = userchat.chat_set.all()
-    notify = []
+    user = User.objects.get(username=user_name) # We get the user
+    chats = userchat.chat_set.all()     # Get all the chats of the user
+    notify = {}
+
     for chat in chats:
         # Get all the messages of the chat
-        # Save all the messages that arent notified
-        msgs = self.messages_chat(chat.id_chat)
-        for msg in msgs:
-            if msg.notified == true:
-                notify.append(msg)
+        messages = self.messages_chat(chat.id_chat)
 
-    # return messages that need notification
+        for i in range(len(messages)):
+            # If the message is not notified
+            if messages[i].notified == false:
+                # We add it to the notify dictionary
+                notify[i] = messages[i]
+
+    # return the dictionary
     return notify
+
+
+# Gets the messages that we need to notify and we wrap them to return a jsonresponse
+def notify_new_messages(user_name):
+    return JsonResponse(look_for_new_messages(user_name))
