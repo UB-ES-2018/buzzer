@@ -348,6 +348,21 @@ def private_messages(request):
     
         return render(request, "messages.html", args)
 
+
+@login_required
+def conversation(request, username):
+    if request.method == "GET":
+        people = [request.user.username, username]
+        chat = search_chat(people)
+        pmessages = messages_chat(chat.id_chat)
+
+        profile = User.objects.filter(username=username)
+
+        args = { "pmessages": pmessages, "profile": profile.first()}
+
+
+
+
 # search list of chats of one user
 def search_chats(user_name):
     userchat = User.objects.get(username=user_name)

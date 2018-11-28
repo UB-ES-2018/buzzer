@@ -10,6 +10,13 @@ class PostForm(forms.ModelForm):
         model = Buzz
         fields = ('text', 'file', )
 
+
+#Formulario para mensajes privados
+class PMessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ()
+
 #Formulario para cambiar la imagen de perfil
 class ProfileForm(forms.ModelForm):
     image = forms.ImageField(required=False)
