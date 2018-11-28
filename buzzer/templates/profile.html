@@ -65,7 +65,7 @@
             Editar Perfil
         </button>
         {% else %}
-        <a href="{% url 'messages' %}" class="btn btn-warning">Mensaje</a>
+        <a href="{% url 'chat' user=profile.username %}" class="btn btn-warning">Mensaje</a>
         {% endif %}
 
     </div>

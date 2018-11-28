@@ -7,8 +7,8 @@ from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile, Buzz, Hashtag
-from .forms import PostForm, ProfileForm, Profile2Form
+from .models import Profile, Buzz, Hashtag, Message, Chat
+from .forms import PostForm, ProfileForm, Profile2Form, PMessageForm
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
 
@@ -350,18 +350,36 @@ def private_messages(request):
 
 
 @login_required
-def conversation(request, username):
+def conversation(request, user):
     if request.method == "GET":
-        people = [request.user.username, username]
+        people = [request.user.username, user]
         chat = search_chat(people)
         pmessages = messages_chat(chat.id_chat)
 
-        profile = User.objects.filter(username=username)
+        profile = User.objects.filter(username=user)
 
-        args = { "pmessages": pmessages, "profile": profile.first()}
+        form = PMessageForm(auto_id=False)
 
+        args = { "pmessages": pmessages, "profile": profile.first(), "pform": form }
 
+        return render(request, "chat.html", args)
 
+    if request.method == "POST":
+        form = PMessageForm(request.POST)
+
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.user = request.user
+            msg.date = timezone.now()
+
+            people = [request.user.username, user]
+            chat = search_chat(people)
+
+            msg.chat = chat
+
+            msg.save()
+
+        return HttpResponseRedirect(reverse("chat", kwargs={'user': user}))
 
 # search list of chats of one user
 def search_chats(user_name):

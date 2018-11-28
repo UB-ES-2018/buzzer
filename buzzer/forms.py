@@ -1,5 +1,5 @@
 from django import forms
-from .models import Buzz,Profile
+from .models import Buzz,Profile, Message
 from django.contrib.auth.models import User
 
 #Formulario para inseratr un buzz con o sin imagen
@@ -13,9 +13,11 @@ class PostForm(forms.ModelForm):
 
 #Formulario para mensajes privados
 class PMessageForm(forms.ModelForm):
+    content = forms.CharField(max_length=140, required=True, widget=forms.Textarea(attrs={'class': 'pmessage-input'}))
+
     class Meta:
         model = Message
-        fields = ()
+        fields = ('content', )
 
 #Formulario para cambiar la imagen de perfil
 class ProfileForm(forms.ModelForm):

@@ -3,7 +3,7 @@
 {% block title %}Buzzer - {{user.username}}{% endblock %}
 {% load hashtags %}
 {% load static %}
-{% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/profile.css" %}	"> {% endblock %}
+{% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/chat.css" %}	"> {% endblock %}
 
 
 <!-- BODY -->
@@ -85,20 +85,18 @@
                     </div>
                 </div>
                 <br>
-                message.content
+                {{ message.content }}
                 <br>
                 <div class="message-date">{{ message.date }} </div>
-
-
-            <h3>Envía un mensaje:</h3>
-            <form action="{% url 'chat' username= %}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="save btn btn-default">Buzzear</button>
-            </form>
-
             </div>
         {% endfor %}
 
+        <h3>Envía un mensaje:</h3>
+        <form action="{% url 'chat' user=profile.username %}" method="POST" class="msg-form">
+            {% csrf_token %}
+                {{ pform.as_p }}
+            <button type="submit" class="save btn btn-default">Mensaje privado</button>
+        </form>        
     </div>
 </div>
 
