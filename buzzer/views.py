@@ -89,7 +89,8 @@ def signupView(request):
         if user is not None:
             # mensage de error ja existeix
             missatges.append('El usuario ya existe')
-            return render(request, "signup.html", args = {'missatges':missatges})
+            args = {'missatges': missatges}
+            return render(request, "signup.html", args)
 
         else:
             user = User.objects.create_user(username=username, password=password)
