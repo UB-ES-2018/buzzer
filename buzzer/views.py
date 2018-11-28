@@ -1,4 +1,3 @@
-from AptUrl.Helpers import _
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,7 +6,7 @@ from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile, Buzz, Hashtag
+from .models import Profile, Buzz, Hashtag, Chat, Message
 from .forms import PostForm, ProfileForm, Profile2Form
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
