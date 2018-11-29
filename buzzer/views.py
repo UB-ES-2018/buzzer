@@ -400,3 +400,18 @@ def messages_chat(chat_id):
     list_of_messages = chat.message_set.all()
 
     return list_of_messages
+
+# send a message directly from sender to receiver
+#   chek if chat between them exists and create if it does not exist
+def send_message(sender_name,receiver_name,text_message,notified):
+    list_of_user_names = [sender_name,receiver_name]
+    chat = search_chat(list_of_user_names)
+    user = User.objects.get(username = sender_name)
+    message = Message.objects.create(chat=chat,user=user)
+    message.date = timezone.now()
+    message.content = text_message
+    message.notified = notified
+    message.save()
+
+    return message 
+
