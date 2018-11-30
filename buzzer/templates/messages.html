@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+<!-- HEAD -->
+{% block title %}Buzzer - Mensajes{% endblock %}
+{% load hashtags %}
+{% load static %}
+{% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/messages.css" %}	"> {% endblock %}
+
+
+<!-- BODY -->
+{% block content %}
+<div class="container">
+    
+    <!-- PROFILE INFO -->
+    <div class="profile-container">
+        <div class="basic-info">
+            <a href="{% url 'profile' user.username %}"></a>
+            <a href="{% url 'load_image' %}">
+                <img class="pfp" src="{{ user.profile.image.url}}"></a>
+
+            <div class="names">
+                <a href="{% url 'profile' user=user.username %}"><h4 class="username">{{user.profile.screen_name}}</h4></a>
+                <h5 class="usertag">@{{user.username}}</h5>
+            </div>
+        </div>
+        <br>
+
+        <!--Bio-->
+        {% if user.profile.bio %}
+            <div class="bio">
+                <p>{{user.profile.bio}}</p>
+            </div>
+            <br>
+        {% endif %}
+
+        <!--Url-->
+        {% if user.profile.url %}
+            <div class="url">
+                <i class="fas fa-link"></i>
+                <a href="http://{{user.profile.url}}">{{user.profile.url}}</a>
+            </div>
+            <br>
+        {% endif %}
+
+        <!--location-->
+        {% if user.profile.location %}
+            <div class="gps">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>{{user.profile.location}}</p>
+            </div>
+            <br>
+        {% endif %}
+
+        <!--birthday-->
+        {% if user.profile.birthday %}
+            <div class="birthday">
+                <i class="fas fa-birthday-cake"></i>
+                <p>Fecha de nacimiento: {{user.profile.birthday}}</p>
+            </div>
+            <br>
+        {% endif %}
+    </div>
+
+    <!-- CHATS -->
+    <div class="chat-container">
+        {% if not chats %}
+            <h3>No hay chats disponibles. ¡Empieza uno!</h3>
+        {% endif %}
+
+        {% for chat in chats %}
+        <p>Aquí va un chat</p>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
+<!-- SCRIPTS -->
+{% block scripts %}  
+{% endblock %}

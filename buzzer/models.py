@@ -94,3 +94,55 @@ class Hashtag (models.Model):
 
      def __str__(self):
          return(self.text)
+
+# Chat: chat_buzzer
+#    chat of a set of users
+class Chat (models.Model):
+    id_chat = models.AutoField(primary_key=True)  # id of chat: automatic incremental
+    name = models.CharField(max_length=50) # name of chat (default name: name of all members)
+    members = models.ManyToManyField(User, blank=True) # all users of chat
+
+    def __str__(self):
+        return(self.name)
+
+    def __eq__(self,other):
+        equals = True
+        for member in self.members:
+            if member not in other.members:
+                equals = False
+                break 
+ 
+        return equals    
+
+    def all_fields(self):     
+        data = "id_chat: " + str(self.id_chat)
+        data += "  name: " + str(self.name)
+        for member in self.members.all(): 
+            data += "  user: " + str(member)
+        
+        return data
+  
+
+# Message: message_buzzer
+#    message between users
+class Message (models.Model):
+    id_message = models.AutoField(primary_key=True)  # id of message: automatic incremental
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE) # sender of message (receiver are all users in chat)
+    date = models.DateTimeField(blank=True, null=True) # date-time message sended
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE) # chat 
+    content = models.CharField(max_length=140) # text of message
+    notified = models.BooleanField(default=False) # indicates whether the message has been notified
+
+    def __str__(self):
+        return(self.content)	
+
+    def all_fields(self):     
+        data = "id_msg: " + str(self.id_message)
+        data += "  user: " + str(self.user)
+        data += "  date: " + str(self.date)
+        data += "  chat: " + str(self.chat)
+        data += "  content: " + str(self.content)
+        data += "  notified: " + str(self.notified)
+                 
+        return data
+ 
