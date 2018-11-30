@@ -1,4 +1,4 @@
-from AptUrl.Helpers import _
+
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -174,21 +174,20 @@ def hashtags():
 def searchView(request):
     missatges = []
     search_text = request.POST.get('search_text')
-    print(type(search_text))
-    search_hash = search_text.split(" ")
+    if search_text is not None:
+        search_hash = search_text.split(" ")
+        if search_hash[0][0] == "#":
+            buzzs = []
+            for hashtag in search_hash:
+                buzzs += buzzSearch(request, hashtag)
+            args = {'buzzs': buzzs, 'search_text': search_text, 'hashtag': True, 'missatges': missatges}
+            return render(request, 'search.html', args);
+        if request.method == "POST":
 
-    if search_hash[0][0] == "#":
-        buzzs = []
-        for hashtag in search_hash:
-            buzzs += buzzSearch(request, hashtag)
-        args = {'buzzs': buzzs, 'search_text': search_text, 'hashtag': True, 'missatges': missatges}
-        return render(request, 'search.html', args);
-    if request.method == "POST":
-
-        users = userSearch(request, search_text)
-        buzzs = buzzSearch(request, search_text)
-        args = {'users': users, 'buzzs': buzzs, 'search_text': search_text, 'hashtag':False , 'missatges': missatges }
-        return render(request, 'search.html', args)
+            users = userSearch(request, search_text)
+            buzzs = buzzSearch(request, search_text)
+            args = {'users': users, 'buzzs': buzzs, 'search_text': search_text, 'hashtag':False , 'missatges': missatges }
+            return render(request, 'search.html', args)
     return render(request, 'search.html')
 
 def actualizarProfile(request, user=""):
