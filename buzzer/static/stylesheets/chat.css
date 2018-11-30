@@ -71,7 +71,7 @@ body {
 
 /***  BUZZ CONTAINER ***/
 
-.buzz-container {
+.message-container {
     display: flex;
     flex-direction: column;
 
@@ -92,31 +92,31 @@ body {
     flex-grow: 2;
 }
 
-.buzz-container .form-container {
+.message-container .form-container {
     border: 2px solid black;
     border-radius: 10px;
     padding: 20px 20px;
     background-color: #edbc40;
 }
 
-.buzz-container .form-container #id_text {
+.message-container .form-container #id_text {
     min-width: 100%;
     min-height: 100px;
     vertical-align: text-top;
 }
 
-.buzz {
+.message {
     border: 1px solid black;
     margin-top: 10px;
 
     padding: 10px;
 }
 
-.buzz-container h3 span {
+.message-container h3 span {
     font-weight: bold;
 }
 
-.buzz-container .pfp {
+.message-container .pfp {
     height: 50px;
     width: 50px;
     float: left;
@@ -128,32 +128,17 @@ body {
     border-radius: 30px;
 }
 
-.buzz-container .pfp:hover {
+.message-container .pfp:hover {
     border: 2px solid black;
 }
 
-.buzz-container .buzz-date {
+.message-container .message-date {
     font-style: italic;
     text-align: right;
 }
 
-/****** MULTIMEDIA ******/
-.multimedia {
-    height: 50%;
-    width: 50%;
-
-    margin-top: 10px;
-    margin-bottom: 10px;
-
-    max-height: 800px;
-}
-
-.multimedia.big {
-    height: 100%;
-    width: 100%
-}
-
-audio {
-    margin-top: 10px;
-    margin-bottom: 10px;
+.pmessage-input {
+    height: 100px;
+    width: 550px;
+    margin-left: 20px;
 }

@@ -1,4 +1,3 @@
-from AptUrl.Helpers import _
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,8 +6,8 @@ from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile, Buzz, Hashtag
-from .forms import PostForm, ProfileForm, Profile2Form
+from .models import Profile, Buzz, Hashtag, Message, Chat
+from .forms import PostForm, ProfileForm, Profile2Form, PMessageForm
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
 
@@ -322,3 +321,140 @@ def posts_hashtags(user,tag):
                 post_list.append(post)
                 break
     return post_list
+
+# define equal in lists
+def equal_list(list1,list2):
+    list1.sort()
+    list2.sort()
+    equals = True
+    if len(list1) != len(list2):
+        equals = False
+    else:
+        for i in range(len(list1)):
+            if list1[i] != list2[i]:
+                equals = False
+                break
+
+    return equals
+
+
+@login_required
+def private_messages(request):
+    if request.method == "GET":
+        user = request.user
+        chat_list = search_chats(user.username)
+        args = { "chats" : chat_list }
+    
+        return render(request, "messages.html", args)
+
+
+@login_required
+def conversation(request, user):
+    if request.method == "GET":
+        people = [request.user.username, user]
+        chat = search_chat(people)
+        pmessages = messages_chat(chat.id_chat)
+
+        profile = User.objects.filter(username=user)
+
+        form = PMessageForm(auto_id=False)
+
+        args = { "pmessages": pmessages, "profile": profile.first(), "pform": form }
+
+        return render(request, "chat.html", args)
+
+    if request.method == "POST":
+        form = PMessageForm(request.POST)
+
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.user = request.user
+            msg.date = timezone.now()
+
+            people = [request.user.username, user]
+            chat = search_chat(people)
+
+            msg.chat = chat
+
+            msg.save()
+
+        return HttpResponseRedirect(reverse("chat", kwargs={'user': user}))
+
+# search list of chats of one user
+def search_chats(user_name):
+    userchat = User.objects.get(username=user_name)
+    list_of_chats = userchat.chat_set.all()
+    return list_of_chats
+
+# create a chat and return
+def create_chat(users_list,chat_name=""):     
+    if chat_name:
+        chat = Chat.objects.create(name=chat_name)
+    else:
+        for user in users_list:
+            chat_name += str(user.username) 
+        chat = Chat.objects.create(name=chat_name)
+    chat.members.set(users_list)
+ 
+    chat.save()
+
+    return chat
+
+# search chat of a list of users  (if the chat doesnt exist it will be created)
+#    enter a list of names of all users (first sender)
+#    return chat 
+def search_chat(list_of_user_names):
+    list_of_chats = search_chats(list_of_user_names[0])
+    found = False
+    list_of_member_names = []
+    
+    for chat in list_of_chats:
+        list_of_member_names = []
+        for member in  chat.members.all():
+            list_of_member_names.append(member.username)
+        if equal_list(list_of_member_names,list_of_user_names):
+            found= True
+            chat_return = chat
+            break
+
+    if (not found):
+       list_of_users = []
+       for user_name in list_of_user_names:
+           user = User.objects.get(username=user_name)
+           list_of_users.append(user)
+       chat_return = create_chat(list_of_users)
+    
+    return chat_return
+
+# create message 
+def create_message(chat_id,user_name,text_message):
+    chat = Chat.objects.get(id_chat=chat_id)
+    user = User.objects.get(username = user_name)
+    message = Message.objects.create(chat=chat,user=user)
+    message.date = timezone.now()
+    message.content = text_message
+    message.save()
+    return message 
+
+# return all messages of a chat ordered by date
+def messages_chat(chat_id):
+    chat = Chat.objects.get(id_chat=chat_id)
+    #list_of_messages = sorted(chat.messages.all , key = lambda x: x.object.time)
+    list_of_messages = chat.message_set.all()
+
+    return list_of_messages
+
+# send a message directly from sender to receiver
+#   chek if chat between them exists and create if it does not exist
+def send_message(sender_name,receiver_name,text_message,notified):
+    list_of_user_names = [sender_name,receiver_name]
+    chat = search_chat(list_of_user_names)
+    user = User.objects.get(username = sender_name)
+    message = Message.objects.create(chat=chat,user=user)
+    message.date = timezone.now()
+    message.content = text_message
+    message.notified = notified
+    message.save()
+
+    return message 
+
