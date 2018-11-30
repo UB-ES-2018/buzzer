@@ -3,49 +3,64 @@
 <!-- HEAD -->
 {% block title %}Buzzer - Signup page{% endblock %}
 {% load static %}
+{% load hashtags %}
 {% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/search.css" %}?version=2	"> {% endblock %}
 
 
 <!-- BODY -->
 {% block content %}
 
-<div class="panel panel-default" id="search_var">
-    <div id="search_text">
-        {% if not tag  %}
-            <h3>SEARCH: --</h3>
-        {% elif not search_text %}
-            <h3>SEARCH: {{ tag }}</h3>
-        {% else %}
-            <h3>SEARCH: {{ search_text }}</h3>
-        {% endif %}
-    </div>
-</div>
-
 <ul class="nav nav-tabs" id="search_nav">
     <li class="active"><a onclick="changeBlockView('buzzs-button')" data-toggle="tab" id="buzzs-button">BUZZERS</a></li>
-    <li><a onclick="changeBlockView('users-button')" data-toggle="tab" id="users-button">USERS</a></li>
-    <li><a onclick="changeBlockView('hastags-button')" data-toggle="tab" id="hashtags-button">HASHTAG</a></li>
+    {% if users != None %}<li><a onclick="changeBlockView('users-button')" data-toggle="tab" id="users-button">USERS</a></li>{% endif %}
 </ul>
 <div id="last_tab"></div>
 
 <div class="buzz-container" id="buzzers-container">
     {% if not buzzs %}
-        <h3>No results in buzzs for:<br>  -->{{ search_text }}</h3>
+        <div class="card">
+          <div class="card-body">
+            <h3>No results in buzzs for:<br>  -->{{ search_text }}</h3>
+          </div>
+        </div>
     {% else %}
         {% for buzz in buzzs %}
             <div class="buzz">
                 <div class="basic-info">
-                    <a href="{% url 'profile' user=buzz.user.username %}">
-                        <img class="pfp" src="{% static "images/buzzer_logo.png" %}"></a>
+                    <a href="{% url 'load_image' %}">
+                        <img class="pfp" src="{{ profile.profile.image.url}}"></a>
                     <div class="names">
                         <a href="{% url 'profile' user=buzz.user.username %}"><h4 class="username">{{buzz.user.profile.screen_name}}</h4></a>
                         <h5 class="usertag">@{{buzz.user.username}}</h5>
                     </div>
                 </div>
                 <br>
-                {{ buzz.text }}
+
+                {% for x in buzz.text|lista_hash %}
+                    {% if x.0 == "#"  %}
+                        <a href="{% url 'hashtags' x %}">{{ x }}</a>
+                    {% else %}
+                        {{ x }}
+                    {% endif %}
+                {% endfor %}
                 <br>
+
+                <!-- Multimedia de un buzz -->
+                {% if buzz.file_type == 'image' %}
+                    <img src="{{buzz.file.url}}" class="multimedia">
+                {% elif buzz.file_type == 'video' %}
+                    <video width="320" height="240" controls class="multimedia">
+                        <source src="{{buzz.file.url}}">
+                    </video>
+                {% elif buzz.file_type == 'audio' %}
+                    <audio controls preload="auto" autobuffer>
+                    <source src="{{buzz.file.url}}" type="audio/mpeg">
+                        Error con el audio
+                    </audio>
+                {% endif %}
+
                 <div class="buzz-date">{{ buzz.created_at }} </div>
+
             </div>
         {% endfor %}
     {% endif %}
@@ -91,52 +106,13 @@
 
 </div>
 
-<div class="buzz-container" id="hashtags-container" style="display: none" >
-    {% if not hashtags %}
-        <h3>No results in users for:<br>  -->{{ tag }}</h3>
-    {% else %}
-        {% for buzz in hashtags %}
-            <div class="buzz">
-                <div class="basic-info">
-                    <a href="{% url 'profile' user=buzz.user.username %}">
-                        <img class="pfp" src="{% static "images/buzzer_logo.png" %}"></a>
-                    <div class="names">
-                        <a href="{% url 'profile' user=buzz.user.username %}"><h4 class="username">{{buzz.user.profile.screen_name}}</h4></a>
-                        <h5 class="usertag">@{{buzz.user.username}}</h5>
-                    </div>
-                </div>
-                <br>
 
-                {% for x in buzz.text %}
-                    {% if x.0 == "#"  %}
-                        <a href="{% url 'hashtags' x %}">{{ x }}</a>
-                    {% else %}
-                        {{ x }}
-                    {% endif %}
-                {% endfor %}
-                <br>
-
-                <div class="buzz-date">{{ buzz.created_at }} </div>
-
-            </div>
-        {% endfor %}
-    {% endif %}
-
-</div>
 
 {% endblock %}
 
 {% block moreJavascript %}
 <script type="text/javascript">
 
-    $(document).ready(function() {
-        if ('{{ hashtag }}' == 'True') {
-            document.getElementById("buzzers-container").style.display = "none";
-            document.getElementById("users-container").style.display = "none";
-            document.getElementById("hashtags-container").style.display = "inline-block";
-            // Fer que la tab hashtag estigui remarcada
-        }
-    });
 
     function changeBlockView($id) {
 
@@ -144,21 +120,13 @@
 
             document.getElementById("buzzers-container").style.display = "inline-block";
             document.getElementById("users-container").style.display = "none";
-            document.getElementById("hashtags-container").style.display = "none";
+
 
         }
         else if ($id === "users-button") {
 
             document.getElementById("buzzers-container").style.display = "none";
-            document.getElementById("hashtags-container").style.display = "none";
             document.getElementById("users-container").style.display = "inline-block";
-
-        }
-        else if ($id === "hastags-button") {
-
-            document.getElementById("buzzers-container").style.display = "none";
-            document.getElementById("users-container").style.display = "none";
-            document.getElementById("hashtags-container").style.display = "inline-block";
 
         }
 

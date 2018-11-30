@@ -51,7 +51,13 @@
                         <li><a href="{% url 'profile' user=user.username %}">{{ user.username }}</a></li>
                         <li id="buzz-button"><a>Buzzear</a></li>
                         <li><a href="{% url 'logout' %}">Logout</a></li>
-                        <li><a href="" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-search"></i></a></li>
+                        <li style="margin-top:  8px">
+                            <form id="t_b" action="{% url 'search' %}" method="post">
+                                
+                            <input type="text" class="form-control" name="search_text" placeholder="tu consulta">
+                            </form>
+                        </li>
+                        <li><a href="" onclick="action_busqueda()" ><i class="fas fa-search"></i></a> </li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'signup' %}">Sign up</a></li>
@@ -147,6 +153,10 @@
 
         });
 
+        function action_busqueda() {
+            document.getElementById("t_b").submit();
+
+        }
         /*$('#alertesModal').on('hidden.bs.modal', function (e) {
             */
     </script>

@@ -157,49 +157,34 @@ def buzzSearch(request, search_text):
     response = [s for s in search]
     return response
 
-def posts_hashtags(user,tag):
-    posts =Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
+def buzzSearchH(request, search_tag):
+    posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
     post_list = []
     for post in posts:
         for palabra in post.text.split():
-            #print(palabra,tag)
-            if(palabra==tag): # El post tiene el tag
+            if (palabra == search_tag):  # El post tiene el tag
                 post_list.append(post)
                 break
-    return post_list
+    response = post_list
+    return response
 
-# List All Buzzs or List of one hashtag
-def hashtags(request, text_hashtag=""):
+def hashtags():
+    pass
 
-    response = "You aren't admin"
-    p = posts_hashtags(request.user,text_hashtag)
-
-    if text_hashtag:
-        response = "You're looking for buzz of hashtag from %s <BR>" % text_hashtag
-        list_of_hashtags = Hashtag.objects.filter(text=text_hashtag)
-
-        for hashtaglist in list_of_hashtags:
-            list_of_buzzs = hashtaglist.buzzs.all()
-            response = response + '<BR> <li>' + '<BR> <li>'.join([Buzz.all_fields(buzz) for buzz in list_of_buzzs])
-    else:
-        response = "You're looking all hashtags"
-        list_of_hashtags = Hashtag.objects.filter()
-        response = response + '<BR> <li>' + '<BR> <li>'.join([str(hashtag) for hashtag in list_of_hashtags])
-
-    return searchView(request, True, {'response':response,'hashtags':p,'tag':text_hashtag, 'hashtag':True})
-
-
-def searchView(request, hashtag_search = False, args = None):
+def searchView(request):
     missatges = []
     search_text = request.POST.get('search_text')
-    if (hashtag_search):
-        users = userSearch(request, args['tag'])
-        buzzs = buzzSearch(request, args['tag'])
-        args['users'] = users
-        args['buzzs'] = buzzs
-        args['missatges'] = missatges
+    print(type(search_text))
+    search_hash = search_text.split(" ")
+
+    if search_hash[0][0] == "#":
+        buzzs = []
+        for hashtag in search_hash:
+            buzzs += buzzSearch(request, hashtag)
+        args = {'buzzs': buzzs, 'search_text': search_text, 'hashtag': True, 'missatges': missatges}
         return render(request, 'search.html', args);
     if request.method == "POST":
+
         users = userSearch(request, search_text)
         buzzs = buzzSearch(request, search_text)
         args = {'users': users, 'buzzs': buzzs, 'search_text': search_text, 'hashtag':False , 'missatges': missatges }
