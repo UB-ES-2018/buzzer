@@ -64,14 +64,10 @@ body {
     text-decoration: none;
 }
 
-.profile-container .btn {
-    margin-bottom: 10px;
-}
-
 
 /***  BUZZ CONTAINER ***/
 
-.buzz-container {
+.chat-container {
     display: flex;
     flex-direction: column;
 
