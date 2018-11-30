@@ -131,6 +131,7 @@ class Message (models.Model):
     date = models.DateTimeField(blank=True, null=True) # date-time message sended
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE) # chat 
     content = models.CharField(max_length=140) # text of message
+    notified = models.BooleanField(default=False) # indicates whether the message has been notified
 
     def __str__(self):
         return(self.content)	
@@ -141,6 +142,7 @@ class Message (models.Model):
         data += "  date: " + str(self.date)
         data += "  chat: " + str(self.chat)
         data += "  content: " + str(self.content)
+        data += "  notified: " + str(self.notified)
                  
         return data
  
