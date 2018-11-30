@@ -173,7 +173,8 @@ def hashtags():
 def searchView(request):
     missatges = []
     search_text = request.POST.get('search_text')
-    if search_text is not None:
+
+    if search_text is not None and search_text != "":
         search_hash = search_text.split(" ")
         if search_hash[0][0] == "#":
             buzzs = []

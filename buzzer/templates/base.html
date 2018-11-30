@@ -46,23 +46,28 @@
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form id="t_b" action="{% url 'search' %}" method="post">
                 <ul class="nav navbar-nav navbar-right">
                     {% if user.is_authenticated %}
+
                         <li><a href="{% url 'profile' user=user.username %}">{{ user.username }}</a></li>
                         <li id="buzz-button"><a>Buzzear</a></li>
                         <li><a href="{% url 'logout' %}">Logout</a></li>
+
+
                         <li style="margin-top:  8px">
-                            <form id="t_b" action="{% url 'search' %}" method="post">
-                                {% csrf_token %}
+                            {% csrf_token %}
                             <input id="campo_texto_busqueda" type="text" class="form-control" name="search_text" placeholder="tu consulta">
-                            </form>
+
                         </li>
-                        <li><a href="" data-toggle="modal" data-target="#exampleModal" ><i class="fas fa-search"></i></a> </li>
+                        <li><button type="submit" style="margin-top: 11px; margin-left: 5px;"><i class="fas fa-search"></i></button> </li>
+
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'signup' %}">Sign up</a></li>
                     {% endif %}
                 </ul>
+            </form>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
