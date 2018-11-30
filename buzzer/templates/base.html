@@ -41,7 +41,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{% url 'index' %}"><img id="buzzer-logo" src="{% static "images/buzzer_logo.png" %}"></a>
+                <a class="navbar-brand" href="{% url 'profile' user=user.username %}"><img id="buzzer-logo" src="{% static "images/buzzer_logo.png" %}"></a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -51,7 +51,13 @@
                         <li><a href="{% url 'profile' user=user.username %}">{{ user.username }}</a></li>
                         <li id="buzz-button"><a>Buzzear</a></li>
                         <li><a href="{% url 'logout' %}">Logout</a></li>
-                        <li><a href="" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-search"></i></a></li>
+                        <li style="margin-top:  8px">
+                            <form id="t_b" action="{% url 'search' %}" method="post">
+                                {% csrf_token %}
+                            <input id="campo_texto_busqueda" type="text" class="form-control" name="search_text" placeholder="tu consulta">
+                            </form>
+                        </li>
+                        <li><a href="" data-toggle="modal" data-target="#exampleModal" ><i class="fas fa-search"></i></a> </li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>
                         <li><a href="{% url 'signup' %}">Sign up</a></li>
@@ -109,6 +115,24 @@
         </div>
     </div>
 
+
+    <div class="modal fade" id="alertesModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Errors</h4>
+          </div>
+          <div class="modal-body" id="alertesModalCos">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" >Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
     <script
     src="https://code.jquery.com/jquery-3.3.1.min.js"
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -118,6 +142,29 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 	<script type="text/javascript" src="{% static "scripts/navbar.js" %}"></script>
+
+    <script>
+        var i = 1;
+        $(document).ready(function() {
+            {% if missatges.0 %}
+            $('div #alertesModalCos').text('{{ missatges.0 }}');
+            $('#alertesModal').modal('show');
+            {% endif %}
+
+        });
+
+        function action_busqueda() {
+			if ($('#campo_texto_busqueda').val() != ""	){
+			    $('#t_b').submit();
+			}else {
+			    alert('camo vacio');
+			}
+
+
+        }
+        /*$('#alertesModal').on('hidden.bs.modal', function (e) {
+            */
+    </script>
 	{% block scripts %}
 	{% endblock %}
 </body>	
