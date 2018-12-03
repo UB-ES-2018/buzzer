@@ -167,12 +167,13 @@ def buzzSearchH(request, search_tag):
     response = post_list
     return response
 
-def hashtags():
-    pass
 
-def searchView(request):
+def searchView(request, search_hastag):
     missatges = []
-    search_text = request.POST.get('search_text')
+    if search_hastag != "":
+        search_text = search_hastag
+    else:
+        search_text = request.POST.get('search_text')
 
     if search_text is not None and search_text != "":
         search_hash = search_text.split(" ")
