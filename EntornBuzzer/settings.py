@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_nose',
+    'channels'
 ]
 
 # Use nose to run all tests
@@ -81,8 +81,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'EntornBuzzer.wsgi.application'
-
+#WSGI_APPLICATION = 'EntornBuzzer.wsgi.application'
+ASGI_APPLICATION = "EntornBuzzer.routing.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -136,7 +136,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'buzzer/media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static/'),
+    os.path.join(BASE_DIR, 'buzzer/static'),
 ]
 
 # Redirect after successful login
