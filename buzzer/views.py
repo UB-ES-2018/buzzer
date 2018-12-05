@@ -357,7 +357,6 @@ def private_messages(request):
         user = request.user
         chat_list = search_chats(user.username)
         args = { "chats" : chat_list }
-    
         return render(request, "messages.html", args)
 
 
