@@ -168,7 +168,7 @@ def buzzSearchH(request, search_tag):
     return response
 
 
-def searchView(request, search_hastag):
+def searchView(request, search_hastag=""):
     missatges = []
     if search_hastag != "":
         search_text = search_hastag
