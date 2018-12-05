@@ -15,12 +15,13 @@ from django.contrib.auth import login, authenticate, logout
 def index(request):
     if (request.user.is_authenticated):
         form = PostForm()
-        return render(request, 'testLogin.html', {'form': form})
+        return render(request, 'profile.html', {'form': form})
     else:
-        return render(request, "signup.html")
+        return render(request, "login.html")
 
 
 # List All Users or List one (username)
+@login_required
 def users(request, user=""):
     response = "You aren't admin"
     if request.user.is_superuser:
@@ -38,6 +39,7 @@ def users(request, user=""):
 
 
 # List All Users+Profile or List one (username)
+@login_required
 def profiles(request, user=""):
     response = "You aren't admin"
     if request.user.is_superuser:
@@ -55,6 +57,7 @@ def profiles(request, user=""):
 
 
 # List All Buzzs or List of one username
+@login_required
 def buzzs(request, user=""):
     response = "You aren't admin"
     if request.user.is_superuser:
@@ -110,6 +113,7 @@ def signupView(request):
             return render(request, "signup.html")
 
     else:
+        missatges.append('no es metode post')
         return render(request, "signup.html")
 
 
@@ -167,7 +171,7 @@ def buzzSearchH(request, search_tag):
     response = post_list
     return response
 
-
+@login_required
 def searchView(request, search_hastag=""):
     missatges = []
     if search_hastag != "":
@@ -191,6 +195,7 @@ def searchView(request, search_hastag=""):
             return render(request, 'search.html', args)
     return render(request, 'search.html')
 
+@login_required
 def actualizarProfile(request, user=""):
     form2 = Profile2Form(request.POST)
     if form2.is_valid():
@@ -228,7 +233,7 @@ def actualizarProfile(request, user=""):
         return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
     return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
-
+@login_required
 def profile(request, user=""):  # TEMPORAL
     if request.method == "GET":
         profile = User.objects.filter(username=user)
@@ -300,6 +305,7 @@ def post_new(request):
 def isMultimedia(type): # Returns true if the file is multimedia, or if there's no file
     return type == 'image' or type == 'video' or type == 'audio' or type == ''
 
+@login_required
 def load_image(request):
     instance = get_object_or_404(Profile, user=request.user)
 
