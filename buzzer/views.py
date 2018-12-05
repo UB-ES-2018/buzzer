@@ -362,6 +362,16 @@ def private_messages(request):
 
 @login_required
 def conversation(request, user):
+
+    try:
+        username = User.objects.get(username=user).username
+    except User.DoesNotExist:
+        username = None
+
+    if username is None:
+        messages.error(request, "ERROR: El usuario " + user + " no existe")
+        return HttpResponseRedirect(reverse("messages"))
+
     if request.method == "GET":
         people = [request.user.username, user]
         chat = search_chat(people)
