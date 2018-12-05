@@ -476,3 +476,7 @@ def send_message(sender_name,receiver_name,text_message,notified):
     message.save()
 
     return message 
+
+
+
+
