@@ -107,7 +107,7 @@ def signupView(request):
                 if user.is_active:  # Active user are not banned users
                     login(request, user)
                     # Redirect to a success page.
-                    return HttpResponseRedirect(reverse('index'))
+                    return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
             # mensage de error
             missatges.append('No se ha podido agregar el usuario')
             return render(request, "signup.html")
@@ -126,7 +126,7 @@ def loginView(request):
         if user.is_active:  # Active user are not banned users
             login(request, user)
             # Redirect to a success page.
-            return HttpResponseRedirect(reverse('index'))
+            return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
         else:  # User is banned
             raise forms.ValidationError(_("This account is banned."), code='inactive', )
