@@ -70,7 +70,7 @@ class Profile(models.Model):
         return followeds  
 
     def get_followers(self):
-        followeds = []
+        followers = []
         for follow in Follow.objects.filter(followed=self.user):
             followers.append(follow.follower)
         return followers
