@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
@@ -10,6 +10,7 @@ from .models import Profile, Buzz, Hashtag, Message, Chat
 from .forms import PostForm, ProfileForm, Profile2Form, PMessageForm
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
+
 
 # Create your views here.
 def index(request):
@@ -191,6 +192,7 @@ def searchView(request, search_hastag=""):
             return render(request, 'search.html', args)
     return render(request, 'search.html')
 
+
 def actualizarProfile(request, user=""):
     form2 = Profile2Form(request.POST)
     if form2.is_valid():
@@ -233,7 +235,7 @@ def profile(request, user=""):  # TEMPORAL
     if request.method == "GET":
         profile = User.objects.filter(username=user)
         posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
-        form = PostForm()        
+        form = PostForm()
         form2 = Profile2Form()
         args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first()}
 
@@ -252,20 +254,19 @@ def profile(request, user=""):  # TEMPORAL
             hashtags_possible = re.findall(r'(##+)|#(\w+#)|#(\w+)',post.text)
             list_of_hashtags = []
             for pair in hashtags_possible:
-                for i in range(3):	
+                for i in range(3):
                     if pair[i] != '' and pair[i].find('#')==-1:
                         if pair[i] not in list_of_hashtags:
-                            list_of_hashtags.append(pair[i])        
+                            list_of_hashtags.append(pair[i])
             for tag in list_of_hashtags:
                 if Hashtag.objects.filter(text = tag).exists():
                     hashtag = Hashtag.objects.filter(text = tag)[0]
-                else: 
+                else:
                     hashtag = Hashtag.objects.create(text = tag)
                 hashtag.buzzs.add(post)
                 hashtag.save()
 
             return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
-
 
 
 @login_required
@@ -300,6 +301,7 @@ def post_new(request):
 def isMultimedia(type): # Returns true if the file is multimedia, or if there's no file
     return type == 'image' or type == 'video' or type == 'audio' or type == ''
 
+
 def load_image(request):
     instance = get_object_or_404(Profile, user=request.user)
 
@@ -320,6 +322,17 @@ def load_image(request):
     return render(request, 'edit.html', {'form': form})
 
 
+# List All Buzzs or List of one hashtag
+def hashtags(request, text_hashtag=""):
+    #print(text_hashtag)
+    response = "You aren't admin"
+    p = posts_hashtags(request.user,text_hashtag)
+    #print(p)
+    if request.user.is_superuser:
+        if text_hashtag:
+            response = "You're looking for buzz of hashtag from %s <BR>" % text_hashtag
+            list_of_hashtags = Hashtag.objects.filter(text=text_hashtag)
+
 
 
 
@@ -334,6 +347,7 @@ def posts_hashtags(user,tag):
                 post_list.append(post)
                 break
     return post_list
+
 
 # define equal in lists
 def equal_list(list1,list2):
@@ -393,53 +407,55 @@ def conversation(request, user):
 
         return HttpResponseRedirect(reverse("chat", kwargs={'user': user}))
 
+
 # search list of chats of one user
 def search_chats(user_name):
     userchat = User.objects.get(username=user_name)
     list_of_chats = userchat.chat_set.all()
     return list_of_chats
 
+
 # create a chat and return
-def create_chat(users_list,chat_name=""):     
+def create_chat(users_list,chat_name=""):
     if chat_name:
         chat = Chat.objects.create(name=chat_name)
     else:
         for user in users_list:
-            chat_name += str(user.username) 
+            chat_name += str(user.username)
         chat = Chat.objects.create(name=chat_name)
     chat.members.set(users_list)
- 
+
     chat.save()
 
     return chat
 
+
 # search chat of a list of users  (if the chat doesnt exist it will be created)
 #    enter a list of names of all users (first sender)
-#    return chat 
+#    return chat
 def search_chat(list_of_user_names):
     list_of_chats = search_chats(list_of_user_names[0])
-    found = False
-    list_of_member_names = []
-    
+
     for chat in list_of_chats:
+        
         list_of_member_names = []
         for member in  chat.members.all():
             list_of_member_names.append(member.username)
+
         if equal_list(list_of_member_names,list_of_user_names):
-            found= True
-            chat_return = chat
-            break
+            return chat
 
-    if (not found):
-       list_of_users = []
-       for user_name in list_of_user_names:
-           user = User.objects.get(username=user_name)
-           list_of_users.append(user)
-       chat_return = create_chat(list_of_users)
+
+    # If we didnt find the chat, we create it
+    list_of_users = []
+    for user_name in list_of_user_names:
+        user = User.objects.get(username=user_name)
+        list_of_users.append(user)
     
-    return chat_return
+    return create_chat(list_of_users)
 
-# create message 
+
+# create message
 def create_message(chat_id,user_name,text_message):
     chat = Chat.objects.get(id_chat=chat_id)
     user = User.objects.get(username = user_name)
@@ -447,7 +463,8 @@ def create_message(chat_id,user_name,text_message):
     message.date = timezone.now()
     message.content = text_message
     message.save()
-    return message 
+    return message
+
 
 # return all messages of a chat ordered by date
 def messages_chat(chat_id):
@@ -456,6 +473,7 @@ def messages_chat(chat_id):
     list_of_messages = chat.message_set.all()
 
     return list_of_messages
+
 
 # send a message directly from sender to receiver
 #   chek if chat between them exists and create if it does not exist
@@ -470,3 +488,35 @@ def send_message(sender_name,receiver_name,text_message,notified):
     message.save()
 
     return message 
+
+
+# Returns a dictionary of not notified messages of a user
+def look_for_new_messages(user_name):
+    user = User.objects.get(username=user_name) # We get the user
+    chats = userchat.chat_set.all()     # Get all the chats of the user
+    notify = {}
+
+    for chat in chats:
+        # Get all the messages of the chat
+        messages = self.messages_chat(chat.id_chat)
+
+        for i in range(len(messages)):
+            # If the message is not notified
+            if messages[i].notified == False:
+                # We add it to the notify dictionary
+                notify[i] = messages[i]
+
+    # return the dictionary
+    return notify
+
+
+# Gets the messages that we need to notify and we wrap them to return a jsonresponse
+def notify_messages(user_name):
+    return JsonResponse(look_for_new_messages(user_name))
+
+
+# Mark all the messages on a dictionary as notified
+def mark_as_notified(messages):
+    for key, msg in messages.items():
+        msg.notified = True;
+        msg.save()

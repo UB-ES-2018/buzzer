@@ -28,7 +28,7 @@ class Profile(models.Model):
     screen_name = models.CharField(max_length=50)  # name that appears on screen (complementary username)
     location = models.CharField(max_length=150)  # defined location for user account’s profile
     url = models.CharField(max_length=150)  # URL provided by the user in association with their profile
-    bio = models.CharField(max_length=150) # general information about user 
+    bio = models.CharField(max_length=150) # general information about user
     birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
     image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media')
 
@@ -85,7 +85,7 @@ class Buzz(models.Model):
         self.published_data = timezone.now()
         self.save()
 
-        
+
 # Hashtag: buzzer_hashtag
 #    hashtag of buzz
 class Hashtag (models.Model):
@@ -110,18 +110,18 @@ class Chat (models.Model):
         for member in self.members:
             if member not in other.members:
                 equals = False
-                break 
- 
-        return equals    
+                break
 
-    def all_fields(self):     
+        return equals
+
+    def all_fields(self):
         data = "id_chat: " + str(self.id_chat)
         data += "  name: " + str(self.name)
-        for member in self.members.all(): 
+        for member in self.members.all():
             data += "  user: " + str(member)
-        
+
         return data
-  
+
 
 # Message: message_buzzer
 #    message between users
@@ -129,20 +129,19 @@ class Message (models.Model):
     id_message = models.AutoField(primary_key=True)  # id of message: automatic incremental
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE) # sender of message (receiver are all users in chat)
     date = models.DateTimeField(blank=True, null=True) # date-time message sended
-    chat = models.ForeignKey(Chat, on_delete=models.CASCADE) # chat 
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE) # chat
     content = models.CharField(max_length=140) # text of message
     notified = models.BooleanField(default=False) # indicates whether the message has been notified
 
     def __str__(self):
-        return(self.content)	
+        return(self.content)
 
-    def all_fields(self):     
+    def all_fields(self):
         data = "id_msg: " + str(self.id_message)
         data += "  user: " + str(self.user)
         data += "  date: " + str(self.date)
         data += "  chat: " + str(self.chat)
         data += "  content: " + str(self.content)
         data += "  notified: " + str(self.notified)
-                 
+
         return data
- 
