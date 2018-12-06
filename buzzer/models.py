@@ -170,14 +170,13 @@ class Message (models.Model):
 # Follow: follow_buzzer
 #    follower follows followed
 class Follow (models.Model):
-      follower = models.ForeignKey(User, related_name="who_is_followed", on_delete=models.CASCADE) # user who follows
-      followed = models.ForeignKey(User, related_name="who_follows",on_delete=models.CASCADE) # user who is followed
-      created = models.DateTimeField(auto_now_add=True, db_index=True) # date of creation of relationship
-      rejected = models.DateTimeField(blank=True, null=True) # date of cancelation of relationship
+    follower = models.ForeignKey(User, related_name="who_is_followed", on_delete=models.CASCADE) # user who follows
+    followed = models.ForeignKey(User, related_name="who_follows",on_delete=models.CASCADE) # user who is followed
+    created = models.DateTimeField(auto_now_add=True, db_index=True) # date of creation of relationship
+    rejected = models.DateTimeField(blank=True, null=True) # date of cancelation of relationship
       
-      class Meta:
-          ordering = ('-created',)
+    class Meta:
+        ordering = ('-created',)
 
-      def __str__(self):
-          return(self.follower.username + " follows " + self.followed.username)
- 
+    def __str__(self):
+        return(self.follower.username + " follows " + self.followed.username) 
