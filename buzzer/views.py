@@ -6,7 +6,7 @@ from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile, Buzz, Hashtag, Message, Chat
+from .models import Profile, Buzz, Hashtag, Message, Chat, Follow
 from .forms import PostForm, ProfileForm, Profile2Form, PMessageForm
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
@@ -476,3 +476,67 @@ def send_message(sender_name,receiver_name,text_message,notified):
     message.save()
 
     return message 
+
+# check follow relationship exists
+def is_follow(follower_name,followed_name):
+    follower = User.objects.get(username=follower_name)
+    followed = User.objects.get(username=followed_name)
+    list_of_follows = Follow.objects.filter(follower=follower,followed=followed)
+    return(len(list_of_follows) != 0)  
+
+# create a new follow
+def new_follow(follower,followed):
+    follows = Follow.objects.filter(follower=follower,followed=followed)
+    if not(follows): 
+        follow = Follow.objects.create(follower=follower,followed=followed)
+        follow.save()
+        follower.profile.count_followed += 1
+        follower.profile.save()  
+        followed.profile.count_follower += 1
+        followed.profile.save()
+    else:
+        follow = follows[0]        
+    return(follow)
+
+# create a new follow (usernames)
+def new_follow_usernames(follower_name,followed_name):
+    follower = User.objects.get(username=follower_name)
+    followed = User.objects.get(username=followed_name)   
+    follow = new_follow(follower,followed)    
+    return(follow)
+
+# search follows of an user (username)
+def search_follows(follower_name):
+     follower = User.objects.get(username=follower_name)              
+     return follower.profile.get_follows()
+
+# search followeds of an user (username)
+def search_followeds(follower_name):
+     follower = User.objects.get(username=follower_name)             
+     return follower.profile.get_followeds()
+
+# search followers of an user (username)
+def search_followers(followed_name):
+     followed = User.objects.get(username=followed_name)              
+     return follower.profile.get_followers()
+
+# search follows of an user (username)
+def search_followers(followed_name):
+     followed = User.objects.get(username=followed_name)              
+     return follower.profile.get_followers()
+
+# create a new follow (followed) from a request
+def followCreate(request, follower="",followed=""):
+    follow = new_follow_usernames(follower,followed)
+    response = str(follow)
+    return HttpResponse(response)
+
+# search all follows (followeds) from a request
+def followSearch(request, follower=""):
+    follows = search_follows(follower)
+    response = "You're looking all follows relationship:"
+    response = response + '<BR> <li>' + '<BR> <li>'.join(
+         [str(follow) for follow in follows])
+
+    return HttpResponse(response)
+
