@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^profile/(?P<user>.*)/$', views.profile, name='profile'),
     url(r'^actualizarProfile/(?P<user>.*)/$', views.actualizarProfile, name='actualizarProfile'),
     url(r'^messages/$', views.private_messages, name='messages'),
+    url(r'^message/$', views.conversation, name="chat"),
     url(r'^message/(?P<user>.*)/$', views.conversation, name="chat"),
 
     # Browser DBs

@@ -77,6 +77,7 @@
         {% for message in pmessages %}
             <div class="message">
                 <div class="basic-info">
+					<h1>"Hello Nib"</h1>
                     <a href="{% url 'profile' user=message.user}">
                         <img class="pfp" src="{{ message.user.profile.image.url}}"></a>
                     <div class="names">
@@ -131,5 +132,30 @@
 
 <!-- SCRIPTS -->
 {% block scripts %}
-  <script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
+<script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
+
+<script>
+	//console.log( window.location)
+	var loc = window.location
+	var wsStart = 'ws://'
+
+	if(loc.protocol == 'https:'){
+	    wsStart = 'wss://'
+	}
+	var endpoint = wsStart + loc.host + loc.pathname
+	var socket = new WebSocket(endpoint)
+
+	socket.onmessage = function(e){
+		console.log("message",e)
+	}
+	socket.onopen  = function(e){
+		console.log("open",e)
+	}
+	socket.onerror  = function(e){
+		console.log("error",e)
+	}
+	socket.onclose  = function(e){
+		console.log("close",e)
+	}
+</script>
 {% endblock %}
