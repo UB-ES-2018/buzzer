@@ -3,7 +3,6 @@ from django.conf.urls import url
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator,OriginValidator
 
-from buzzer import views
 from buzzer.consumers import ChatConsumer
 application = ProtocolTypeRouter({
     # Empty for now (http->django views is added by default)
