@@ -17,10 +17,10 @@ class ChatConsumer(AsyncConsumer):
         thread_obj = await self.get_id(me,other_user)
         chat_room = f"thread_{thread_obj.id_chat}"
         self.chat_room = chat_room
-        """await self.channel_layer.group_add(
+        await self.channel_layer.group_add(
             chat_room,
             self.channel_name
-        )"""
+        )
         #print(other_user,me)
         # Send something to frontend
         # Accept the connection
@@ -39,8 +39,9 @@ class ChatConsumer(AsyncConsumer):
             #print(user,other_user,type(me),type(other_user))
             id = await self.get_id(me,other_user)
             #print(id.id_chat)
-            #save_msg = views.send_message(me,other_user,msg,notified='False')
-            #print(save_msg)
+            # Guardamos
+            save_msg = views.send_message(me,other_user,msg,notified='False')
+            print(save_msg)
             username = 'default'
             if user.is_authenticated:
                 username= user.username
@@ -52,21 +53,22 @@ class ChatConsumer(AsyncConsumer):
             myResponse = {
                 'message': msg,
                 'username':username,
+                'user_receiver':other_user,
                 'num':num_noti
 
             }
-            """await self.channel_layer.group_send(
+            await self.channel_layer.group_send(
                 self.chat_room,
                 {
                     "type": "chat_message",
                     "text": json.dumps(myResponse)
                 }
-            )"""
+            )
 
-            await self.send({
+            """await self.send({
                 "type": "websocket.send",
                 "text": json.dumps(myResponse),
-            })
+            })"""
 
     async def chat_message(self,event):
         await self.send({
