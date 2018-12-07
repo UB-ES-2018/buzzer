@@ -73,11 +73,9 @@
     <!-- MENSAJES -->
     <div class="message-container">
         <h3>Mensajes de <span>{{ profile.profile.screen_name }}</span></h3>
-
         {% for message in pmessages %}
-            <div class="message">
+            <div class="message" >
                 <div class="basic-info">
-					<h1>"Hello Nib"</h1>
                     <a href="{% url 'profile' user=message.user}">
                         <img class="pfp" src="{{ message.user.profile.image.url}}"></a>
                     <div class="names">
@@ -85,15 +83,16 @@
                         <h5 class="usertag">@{{message.user.username}}</h5>
                     </div>
                 </div>
+				<div id="message_id">
                 <br>
                 {{ message.content }}
                 <br>
+				</div>
                 <div class="message-date">{{ message.date }} </div>
             </div>
         {% endfor %}
-
         <h3>Envía un mensaje:</h3>
-        <form action="{% url 'chat' user=profile.username %}" method="POST" class="msg-form">
+        <form  id='form' action="{% url 'chat' user=profile.username %}" method="POST" class="msg-form">
             {% csrf_token %}
                 {{ pform.as_p }}
             <button type="submit" class="save btn btn-default">Mensaje privado</button>
@@ -133,10 +132,15 @@
 <!-- SCRIPTS -->
 {% block scripts %}
 <script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
-
+<script src='https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js'></script>
 <script>
 	//console.log( window.location)
 	var loc = window.location
+
+	var formData = $("#form")
+	var msgInput = $(".pmessage-input")
+
+	var chat_m = $(".message")
 	var wsStart = 'ws://'
 
 	if(loc.protocol == 'https:'){
@@ -144,13 +148,27 @@
 	}
 
 	var endpoint = wsStart + loc.host + "/"+loc.pathname
-	var socket = new WebSocket(endpoint)
+	var socket = new ReconnectingWebSocket(endpoint)
 
 	socket.onmessage = function(e){
 		console.log("message",e)
+		var chatDataMsg = JSON.parse(e.data)
+		var notifications = chatDataMsg.num
+		chat_m.append("<br>"+chatDataMsg.message+" "+chatDataMsg.num +"</br>")
+
 	}
 	socket.onopen  = function(e){
 		console.log("open",e)
+		formData.submit(function(event){
+		    event.preventDefault()
+			var msgText = msgInput.val()
+
+			var finalData = {
+				'message': msgText
+			}
+			socket.send(JSON.stringify(finalData))
+			formData[0].reset()
+		})
 	}
 	socket.onerror  = function(e){
 		console.log("error",e)

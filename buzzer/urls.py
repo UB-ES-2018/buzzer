@@ -31,6 +31,8 @@ urlpatterns = [
     url(r'^buzzs/(?P<user>.*)/$', views.buzzs, name='buzzs'),
     url(r'^upload/$', views.load_image, name='load_image'),
 
+    url(r'^notify/$', views.message_notify, name='message_notify'),
+
 
 ]
 

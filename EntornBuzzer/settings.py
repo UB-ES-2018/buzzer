@@ -42,6 +42,18 @@ INSTALLED_APPS = [
     'channels',
     'django_nose',
 ]
+#ASGI_APPLICATION = "buzzer.channels_app.routing.application"
+
+ASGI_APPLICATION = "EntornBuzzer.routing.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL'),'redis://localhost:6379']
+        }
+    },
+}
 
 # Use nose to run all tests
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
@@ -83,7 +95,7 @@ TEMPLATES = [
 ]
 
 #WSGI_APPLICATION = 'EntornBuzzer.wsgi.application'
-ASGI_APPLICATION = "EntornBuzzer.routing.application"
+
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -132,6 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'buzzer/media')
 
