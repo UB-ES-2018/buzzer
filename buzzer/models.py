@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime
+from django.db.models import Q
 
 
 # User:  auth_user (contrib.auth.User)
@@ -31,6 +32,10 @@ class Profile(models.Model):
     bio = models.CharField(max_length=150) # general information about user 
     birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
     image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media')
+    count_follower = models.PositiveIntegerField(default=0) # number of users follows me  
+    count_followed = models.PositiveIntegerField(default=0) # number of users that I follow
+    count_notification = models.PositiveIntegerField(default=0) # number of notifications pending (to be showed)    
+
 
     def __str__(self):
         return(self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name)
@@ -55,6 +60,21 @@ class Profile(models.Model):
         data += " email: " + self.user.email
         return data
 
+    def get_follows(self): # return all follow-relationships (as follower and as followed)
+        return Follow.objects.filter(Q(follower=self.user) | Q(followed=self.user))
+        
+    def get_followeds(self):
+        followeds = []
+        for follow in Follow.objects.filter(follower=self.user):
+            followeds.append(follow.followed)
+        return followeds  
+
+    def get_followers(self):
+        followers = []
+        for follow in Follow.objects.filter(followed=self.user):
+            followers.append(follow.follower)
+        return followers
+ 
 
 # Buz: buzzer_buz
 #   posts of buzzer
@@ -145,4 +165,64 @@ class Message (models.Model):
         data += "  notified: " + str(self.notified)
                  
         return data
+
+
+# Follow: follow_buzzer
+#    follower follows followed
+class Follow (models.Model):
+    follower = models.ForeignKey(User, related_name="who_is_followed", on_delete=models.CASCADE) # user who follows
+    followed = models.ForeignKey(User, related_name="who_follows",on_delete=models.CASCADE) # user who is followed
+    created = models.DateTimeField(auto_now_add=True, db_index=True) # date of creation of relationship
+    rejected = models.DateTimeField(blank=True, null=True) # date of cancelation of relationship
+      
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return(self.follower.username + " follows " + self.followed.username)
+
+    def all_fields(self):     
+        data = "follower: " + str(self.follower)
+        data += "  followed: " + str(self.followed)
+        data += "  created: " + str(self.created)
+        data += "  rejected: " + str(self.rejected)
+        return data
+      
+
+# Notification: notification_buzzer
+#    notification when there is a new message, buzz or follower
+class Notification (models.Model):
+    id_notification = models.AutoField(primary_key=True)  # id of notification: automatic incremental
+    title = models.TextField(max_length=140) # title of notification
+    description = models.TextField(max_length=140) # description of notification
+    user_notify = models.ForeignKey(User, related_name="who_is_notified", null=True, on_delete=models.CASCADE) # all users to be notified    
+    created = models.DateTimeField(auto_now_add=True, db_index=True) # date of creation of notification
+    showed = models.BooleanField(default=False) # weather notification is showed
+    type_notification = models.PositiveIntegerField(default=0) # notification type: 0-generic,1-message,2-buzz,3-follower
+    message = models.ForeignKey(Message, null=True, on_delete=models.CASCADE) # notification of message
+    buzz = models.ForeignKey(Buzz, null=True, on_delete=models.CASCADE) # notification of buzz
+    follower = models.ForeignKey(User, related_name="follower", null=True, on_delete=models.CASCADE) # notificacion of follower 
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return(self.title + " - " + self.description)
+
+    def all_fields(self):     
+        data = "id_notification: " + str(self.id_notification)
+        data += "  title: " + str(self.title)
+        data += "  description: " + str(self.description)
+        data += "  user_notify: " + str(self.user_notify)
+        data += "  created: " + str(self.created)
+        data += "  type_notification: " + str(self.type_notification)
+        if self.type_notification == 1: 
+            data += "  message: " + str(self.message)
+        else:
+            if self.type_notification == 2: 
+                data += "  buzz: " + str(self.buzz)
+            else:
+                data += "  follower: " + str(self.follower)
+        return data
+
  
