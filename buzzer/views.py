@@ -520,11 +520,6 @@ def search_followers(followed_name):
      followed = User.objects.get(username=followed_name)              
      return follower.profile.get_followers()
 
-# search follows of an user (username)
-def search_followers(followed_name):
-     followed = User.objects.get(username=followed_name)              
-     return follower.profile.get_followers()
-
 # create new notification
 def create_notification(title, description, user_notify, type_notification, message=None, buzz=None, follower=None):
     notification = Notification(title = title ,description = description)
