@@ -14,7 +14,7 @@
 	<h3>Inicia sesión en Buzzer</h3>
 	<br>
 
-    <form action="." method="POST">
+    <form action="{% url 'signup' %}" method="POST">
 		{% csrf_token %}
         <div class="form-group row">
     		<label for="name" class="col-sm-3 col-form-label">Nombre:</label>
