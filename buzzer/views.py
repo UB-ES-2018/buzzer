@@ -364,7 +364,6 @@ def private_messages(request):
         user = request.user
         chat_list = search_chats(user.username)
         args = { "chats" : chat_list }
-    
         return render(request, "messages.html", args)
 
 
@@ -549,4 +548,23 @@ def search_notifications(user):
     return notifications
 
 
+def look_for_new_messages(user_name):
+    user = User.objects.get(username=user_name) # We get the user
+    print(user)
+    chats = user.chat_set.all()     # Get all the chats of the user
+    notify = {}
+    for chat in chats:
+        #print(chat,chat.id_chat)
+        # Get all the messages of the chat
+        messages = messages_chat(chat.id_chat)
+        for i in range(len(messages)):
+            # If the message is not notified
+            if messages[i].notified == False:
+                # We add it to the notify dictionary
+                notify[i] = messages[i]
+    # return the dictionary
+    return notify
 
+def message_notify(request):
+
+    pass

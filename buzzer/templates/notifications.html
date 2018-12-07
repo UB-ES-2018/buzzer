@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+<!-- HEAD -->
+{% block title %}Buzzer - Test login{% endblock %}
+{% load static %}
+{% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/login.css" %}"> {% endblock %}
+<!-- BODY -->
+{% block content %}
+<div id="login-container">
+<table id ='myTable'>
+    <thead>
+	</thead>
+    <tbody >
+         {% for b in json %}
+             <tr>
+             <td>{{b}}</td>
+             </tr>
+         {% endfor %}
+    </tbody >
+</table>
+</div>
+{% endblock %}

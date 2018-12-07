@@ -39,8 +39,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'django_nose',
 ]
+#ASGI_APPLICATION = "buzzer.channels_app.routing.application"
+
+ASGI_APPLICATION = "EntornBuzzer.routing.application"
+
+CHANNEL_LAYERS={
+    'default': {
+        'BACKEND':'channels_redis.core.RedisChannelLayer',
+        'CONFIG':{
+            'hosts': [('localhost', 6379)],
+        }
+    },
+}
 
 # Use nose to run all tests
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
@@ -81,7 +94,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'EntornBuzzer.wsgi.application'
+#WSGI_APPLICATION = 'EntornBuzzer.wsgi.application'
 
 
 # Database
@@ -113,7 +126,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -132,11 +144,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'buzzer/media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static/'),
+    os.path.join(BASE_DIR, 'buzzer/static'),
 ]
 
 # Redirect after successful login
