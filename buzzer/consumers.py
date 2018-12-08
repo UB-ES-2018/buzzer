@@ -41,11 +41,15 @@ class ChatConsumer(AsyncConsumer):
             #print(id.id_chat)
             # Guardamos
             save_msg = views.send_message(me,other_user,msg,notified='False')
+            #save_noti = views.create_notification(msg, "", other_user, 1, message=msg, buzz=None, follower=None)
             print(save_msg)
+            #print(save_noti)
+
             username = 'default'
             if user.is_authenticated:
                 username= user.username
                 chat = views.look_for_new_messages(other_user)
+
                 #print(chat)
                 num_noti= len(chat)
 
@@ -81,3 +85,4 @@ class ChatConsumer(AsyncConsumer):
 
     async def get_id(self,me,other_user):
         return views.search_chat([me,other_user])
+

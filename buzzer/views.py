@@ -565,6 +565,21 @@ def look_for_new_messages(user_name):
     # return the dictionary
     return notify
 
-def message_notify(request):
-
+def notified(notified):
     pass
+
+def message_notify(request):
+    user = User.objects.get(username=request.user)  # We get the user
+    print(user)
+    chats = user.chat_set.all()  # Get all the chats of the user
+    notify = {}
+    for chat in chats:
+        # print(chat,chat.id_chat)
+        # Get all the messages of the chat
+        print(chat)
+        
+        if((str(chat).find(str(user)))):
+            messages = messages_chat(chat.id_chat)
+            print(messages)
+        messages = ["No hay notificaciones",]
+    return render(request,'notifications.html',{'json':messages})
