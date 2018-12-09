@@ -240,7 +240,8 @@ def profile(request, user=""):  # TEMPORAL
         posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
         form = PostForm()        
         form2 = Profile2Form()
-        args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first()}
+        isFollowed = is_follow(user, request.user)
+        args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first(), 'isFollowed': isFollowed}
 
 
         return render(request, 'profile.html', args)

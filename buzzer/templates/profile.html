@@ -24,6 +24,18 @@
         </div>
         <br>
 
+        <!-- FOLLOWERS -->
+        <div class="follow-container">
+            <div class="follow-info">
+                <p><span class="bold">Seguidores: </span>{{profile.profile.count_follower}}</p>
+                <p><span class="bold">Siguiendo: </span>{{profile.profile.count_followed}}</p>
+            </div>
+            {% if not isFollowed %}
+                <button class="btn btn-primary">Seguir</button>
+            {% endif %}            
+        </div>
+
+        <br>
         <!--Bio-->
         {% if profile.profile.bio %}
             <div class="bio">
@@ -58,7 +70,6 @@
             </div>
             <br>
         {% endif %}
-
 
         {% if user.username == profile.username %}
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
