@@ -186,13 +186,24 @@ def searchView(request, search_hastag=""):
             buzzs = []
             for hashtag in search_hash:
                 buzzs += buzzSearch(request, hashtag)
-            args = {'buzzs': buzzs, 'search_text': search_text, 'hashtag': True, 'missatges': missatges}
+            args = {'buzzs': buzzs, 'search_text': search_text, 'hashtag': True, 'mencio': False, 'missatges': missatges}
             return render(request, 'search.html', args);
-        if request.method == "POST":
+        elif search_hash[0][0] == "@":
+            users = []
+            for search_text in search_hash:
+                users += userSearch(request, search_text[1:])
+            args = {'users': users, 'search_text': search_text, 'hashtag': False, 'mencio': True,
+                    'missatges': missatges}
+            return render(request, 'search.html', args);
+        elif request.method == "POST":
 
             users = userSearch(request, search_text)
             buzzs = buzzSearch(request, search_text)
-            args = {'users': users, 'buzzs': buzzs, 'search_text': search_text, 'hashtag':False , 'missatges': missatges }
+            args = {'users': users, 'buzzs': buzzs, 'search_text': search_text, 'hashtag':False , 'mencio':False, 'missatges': missatges }
+            return render(request, 'search.html', args)
+        else:
+            missatges.append('no se reconoce el texto')
+            args = {'missatges': missatges}
             return render(request, 'search.html', args)
     return render(request, 'search.html')
 
@@ -295,6 +306,13 @@ def post_new(request):
                 post.save()
             else:
                 messages.error(request, "El archivo introducido no es un archivo multimedia")
+            users = re.findall(r'@(\w+)',post.text)
+            for username in users:
+                user = get_object_or_404(User,username=username)
+                if user:
+                    print(user.username)
+                    create_notification('MENCION','El usuario ' + post.user.username + ' te ha mencionado', user, 2,
+                                        None, post, None)
 
         return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
 
@@ -336,7 +354,6 @@ def posts_hashtags(user,tag):
     post_list = []
     for post in posts:
         for palabra in post.text.split():
-            #print(palabra,tag)
             if(palabra==tag): # El post tiene el tag
                 post_list.append(post)
                 break
@@ -545,11 +562,9 @@ def search_notifications(user):
 
 def look_for_new_messages(user_name):
     user = User.objects.get(username=user_name) # We get the user
-    print(user)
     chats = user.chat_set.all()     # Get all the chats of the user
     notify = {}
     for chat in chats:
-        #print(chat,chat.id_chat)
         # Get all the messages of the chat
         messages = messages_chat(chat.id_chat)
         for i in range(len(messages)):
@@ -565,13 +580,10 @@ def notified(notified):
 
 def message_notify(request):
     user = User.objects.get(username=request.user)  # We get the user
-    print(user)
     chats = user.chat_set.all()  # Get all the chats of the user
     notify = {}
     for chat in chats:
-        # print(chat,chat.id_chat)
         # Get all the messages of the chat
-        print(chat)
         
         if((str(chat).find(str(user)))):
             messages = messages_chat(chat.id_chat)

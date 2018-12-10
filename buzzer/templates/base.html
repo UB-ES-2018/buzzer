@@ -54,8 +54,8 @@
 
                         <li><a href="{% url 'profile' user=user.username %}">{{ user.username }}</a></li>
                         <li id="buzz-button"><a>Buzzear</a></li>
-						<li><a href="{% url 'message_notify' %}" class="button-badge">
-							<i class="fa fa-envelope"></i><span class="badge alert" id="numero_noti">0</span>Notificaciones</a></li>
+						<li ><a href="{% url 'message_notify' %}" class="button-badge">
+							<i class="fa fa-envelope"></i> {{ user.profile.count_notification }}</a></li>
                         <li><a href="{% url 'logout' %}">Logout</a></li>
 
 
@@ -201,6 +201,7 @@
             console.log("message", e);
             var chatDataMsg = JSON.parse(e.data);
             var notifications = chatDataMsg.num;
+
             $('#numero_noti').text(notifications.toString());
             chat_m.append("<br>" + chatDataMsg.message + " " + chatDataMsg.num + "</br>");
         }

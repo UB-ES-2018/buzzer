@@ -4,12 +4,24 @@
     padding: 1rem 1.5rem;
     position: relative;
     display: inline-block;
-    border-radius: .2rem;
+    border-radius: 25px !important;
     transition: all ease 0.4s;
+    color: white !important;
+}
+
+.fa{
+    color:white;
+    transition: all ease 0.4s;
+
 }
 
 .button-badge:hover{
     box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    color: black !important;
+}
+
+.button-badge:hover i{
+    color:black;
 }
 
 .badge{
@@ -20,6 +32,4 @@
 
 }
 
-.fa{
-    color:white;
-}
+
