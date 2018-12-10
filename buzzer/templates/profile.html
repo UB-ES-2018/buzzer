@@ -27,12 +27,16 @@
         <!-- FOLLOWERS -->
         <div class="follow-container">
             <div class="follow-info">
-                <p><span class="bold">Seguidores: </span>{{profile.profile.count_follower}}</p>
-                <p><span class="bold">Siguiendo: </span>{{profile.profile.count_followed}}</p>
+                <p><span class="bold">Seguidores: </span><span id="count_follower">{{profile.profile.count_follower}}</span></p>
+                <p><span class="bold">Siguiendo: </span><span id="count_followed">{{profile.profile.count_followed}}</span></p>
             </div>
-            {% if not isFollowed %}
-                <button class="btn btn-primary">Seguir</button>
-            {% endif %}            
+            {% if user.username != profile.username %}
+                {% if not isFollowed %}
+                    <button class="btn btn-primary" id="btn-follow">Seguir</button>
+                {% else %}
+                    <button class="btn btn-success" id="btn-follow">Siguiendo</button>
+                {% endif %}
+            {% endif %}
         </div>
 
         <br>
@@ -159,5 +163,9 @@
 
 <!-- SCRIPTS -->
 {% block scripts %}
+  <script type="text/javascript">
+    var profile = "{{ profile.username }}";
+    var user = "{{ user.username }}";
+  </script>
   <script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
 {% endblock %}

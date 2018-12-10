@@ -23,6 +23,8 @@ urlpatterns = [
     url(r'^followCreate/(?P<follower>.*)/(?P<followed>.*)/$', views.followCreate, name='followCreate'),
     url(r'^followSearch/(?P<follower>.*)/$', views.followSearch, name='followSearch'),
     
+    # Ajax
+    url(r'^ajax/follow_toggle/$', views.follow_toggle, name='follow_toggle'),
 
     # Browser DBs
     url(r'^users/$', views.users, name='users'),
