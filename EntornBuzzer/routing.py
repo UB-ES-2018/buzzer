@@ -10,7 +10,29 @@ application = ProtocolTypeRouter({
         AuthMiddlewareStack(
             URLRouter(
                 [
-                url(r'^message/(?P<user>.*)/$', ChatConsumer),
+                    # Search
+                    url(r'^search/(?P<search_hastag>.*)/$', ChatConsumer),
+                    url(r'^search/$', ChatConsumer),
+
+                    # Extras
+                    url(r'^new_post/$', ChatConsumer),
+                    url(r'^profile/(?P<user>.*)/$', ChatConsumer),
+                    url(r'^actualizarProfile/(?P<user>.*)/$', ChatConsumer),
+                    url(r'^messages/$', ChatConsumer),
+                    url(r'^message/$', ChatConsumer),
+                    url(r'^message/(?P<user>.*)/$', ChatConsumer),
+
+                    # Browser DBs
+                    url(r'^users/$', ChatConsumer),
+                    url(r'^users/(?P<user>.*)/$', ChatConsumer),
+                    url(r'^profiles/$', ChatConsumer),
+                    url(r'^profiles/(?P<user>.*)/$', ChatConsumer),
+                    url(r'^buzzs/$', ChatConsumer),
+                    url(r'^buzzs/(?P<user>.*)/$', ChatConsumer),
+                    url(r'^upload/$', ChatConsumer),
+
+                    url(r'^notify/$', ChatConsumer),
+
                 ]
             )
         )
