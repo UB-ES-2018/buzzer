@@ -73,10 +73,11 @@
     <!-- MENSAJES -->
     <div class="message-container">
         <h3>Mensajes de <span>{{ profile.profile.screen_name }}</span></h3>
+        <div id="id_contenidor">
         {% for message in pmessages %}
             <div class="message" >
                 <div class="basic-info">
-                    <a href="{% url 'profile' user=message.user}">
+                    <a href="{% url 'profile' user=message.user %}">
                         <img class="pfp" src="{{ message.user.profile.image.url}}"></a>
                     <div class="names">
                         <a href="{% url 'profile' user=message.user.username %}"><h4 class="username">{{message.user.profile.screen_name}}</h4></a>
@@ -91,6 +92,7 @@
                 <div class="message-date">{{ message.date }} </div>
             </div>
         {% endfor %}
+        </div>
         <h3>Envía un mensaje:</h3>
         <form  id='form' action="{% url 'chat' user=profile.username %}" method="POST" class="msg-form">
             {% csrf_token %}
@@ -133,5 +135,37 @@
 {% block scripts %}
 <script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
 
+<script type="text/javascript">
+    function action_afegir_missatge(msg_text,msg_data) {
+        console.log('llega', msg_text);
+        console.log(message.user.profile.image.url);
+
+
+        $('<div class="message">').appendTo($('#id_contenidor'));
+            $('<div class="basic-info">').appendTo($('#id_contenidor'));
+                $('<a href=\"' + '{% url 'profile' user=message.user %}' + '\">').appendTo($('#id_contenidor'));
+                    $('<img class="pfp" src="' + '{{ message.user.profile.image.url}}' + '"></a>').appendTo($('#id_contenidor'));
+                $('<div class="names">').appendTo($('#id_contenidor'));
+                    $('<a href="' + url + '"><h4 class="username">' + {{message.user.profile.screen_name}} + '</h4></a>').appendTo($('#id_contenidor'));
+                    $('<h5 class="usertag">@' + {{message.user.username}} + '</h5>').appendTo($('#id_contenidor'));
+            $('</div></div>').appendTo($('#id_contenidor'));
+            $('<div id="message_id">').appendTo($('#id_contenidor'));
+                $('<br>' + msg_text + '<br>').appendTo($('#id_contenidor'));
+            $('</div>').appendTo($('#id_contenidor'));
+
+            $('<div class="message-date">' + msg_data + '</div>').appendTo($('#id_contenidor'));
+
+        $('</div>').appendTo($('#id_contenidor'));
+
+
+
+    }
+
+
+
+
+
+
+</script>
 
 {% endblock %}

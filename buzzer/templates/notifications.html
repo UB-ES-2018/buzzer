@@ -6,16 +6,10 @@
 <!-- BODY -->
 {% block content %}
 <div id="login-container">
-<table id ='myTable'>
-    <thead>
-	</thead>
-    <tbody >
-         {% for b in json %}
-             <tr>
-             <td>{{b}}</td>
-             </tr>
-         {% endfor %}
-    </tbody >
-</table>
+    {% if notificaciones %}
+        <h3>con notificaciones</h3>
+    {% else %}
+        <h3>Sin notificaciones</h3>
+    {% endif %}
 </div>
 {% endblock %}

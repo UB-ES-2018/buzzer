@@ -314,6 +314,7 @@ def post_new(request):
                     create_notification('MENCION','El usuario ' + post.user.username + ' te ha mencionado', user, 2,
                                         None, post, None)
 
+
         return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
 
     else:
@@ -486,12 +487,14 @@ def send_message(sender_name,receiver_name,text_message,notified):
     list_of_user_names = [sender_name,receiver_name]
     chat = search_chat(list_of_user_names)
     user = User.objects.get(username = sender_name)
+    user_reciver = User.objects.get(username=receiver_name)
     message = Message.objects.create(chat=chat,user=user)
     message.date = timezone.now()
     message.content = text_message
     message.notified = notified
     message.save()
-
+    #NIBRASS: Añadimos nueva notificacion al mandar un mensaje
+    create_notification('Tienes un nuevo mensaje', 'El usuario' + sender_name + 'te ha mandado un mensaje nuevo', user_reciver, 2, message, None, None)
     return message 
 
 # check follow relationship exists
@@ -580,13 +583,7 @@ def notified(notified):
 
 def message_notify(request):
     user = User.objects.get(username=request.user)  # We get the user
-    chats = user.chat_set.all()  # Get all the chats of the user
-    notify = {}
-    for chat in chats:
-        # Get all the messages of the chat
-        
-        if((str(chat).find(str(user)))):
-            messages = messages_chat(chat.id_chat)
-            print(messages)
-        messages = ["No hay notificaciones",]
-    return render(request,'notifications.html',{'json':messages})
+    notify = search_notifications(user)
+
+    return render(request,'notifications.html',{'notificaciones': notify})
+#NIBRASS: envio notificaciones a html
