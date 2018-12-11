@@ -138,24 +138,29 @@
 <script type="text/javascript">
     function action_afegir_missatge(msg_text,msg_data) {
         console.log('llega', msg_text);
-        console.log(message.user.profile.image.url);
 
+        var mensaje = '<div class="message" >' +
+            '                <div class="basic-info">' +
+            '                    <a href="">' +
+            '                        <img class="pfp" src=""></a>' +
+            '                    <div class="names">' +
+            '                        <a href=""><h4 class="username"></h4></a>' +
+            '                        <h5 class="usertag">@</h5>' +
+            '                    </div>' +
+            '                </div>' +
+            '<div class="message-text">' +
+            '                <br>' +
+            '                <p></p>' +
+            '                <br>' +
+            '</div>' +
+            '                <div class="message-date"></div>' +
+            '            </div>';
 
-        $('<div class="message">').appendTo($('#id_contenidor'));
-            $('<div class="basic-info">').appendTo($('#id_contenidor'));
-                $('<a href=\"' + '{% url 'profile' user=message.user %}' + '\">').appendTo($('#id_contenidor'));
-                    $('<img class="pfp" src="' + '{{ message.user.profile.image.url}}' + '"></a>').appendTo($('#id_contenidor'));
-                $('<div class="names">').appendTo($('#id_contenidor'));
-                    $('<a href="' + '{% url \'profile\' user=message.user.username %}' + '"><h4 class="username">' + {{message.user.profile.screen_name}} + '</h4></a>').appendTo($('#id_contenidor'));
-                    $('<h5 class="usertag">@' + {{message.user.username}} + '</h5>').appendTo($('#id_contenidor'));
-            $('</div></div>').appendTo($('#id_contenidor'));
-            $('<div id="message_id">').appendTo($('#id_contenidor'));
-                $('<br>' + msg_text + '<br>').appendTo($('#id_contenidor'));
-            $('</div>').appendTo($('#id_contenidor'));
+        mensaje = $(mensaje);
 
-            $('<div class="message-date">' + msg_data + '</div>').appendTo($('#id_contenidor'));
+        mensaje.find(".message-text").first().children('p').html(msg_text);
 
-        $('</div>').appendTo($('#id_contenidor'));
+        mensaje.appendTo($('#id_contenidor'));
 
 
 

@@ -13,7 +13,6 @@ class ChatConsumer(AsyncConsumer):
     async def websocket_connect(self,event):
 
         print("connected",event)
-
         other_user = self.scope['url_route']['kwargs']['user']
         me = self.scope['user']
         me = str(me)
@@ -93,3 +92,18 @@ class ChatConsumer(AsyncConsumer):
     async def get_id(self,me,other_username):
         return views.search_chat([me,other_username])
 
+
+class NotiConsumer(AsyncConsumer):
+    async def websocket_connect(self,event):
+        print("connected notification", event, )
+
+        await self.send({
+            "type": "websocket.accept"
+        })
+        pass
+
+    async def websocket_receive(self,event):
+        pass
+
+    async def websocket_disconnect(self, event):
+        print("disconnected", event)

@@ -581,7 +581,7 @@ def look_for_new_messages(user_name):
 def notified(notified):
     pass
 
-def message_notify(request):
+def message_notify(request, user=None):
     user = User.objects.get(username=request.user)  # We get the user
     notify = search_notifications(user)
 

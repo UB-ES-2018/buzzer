@@ -5,12 +5,15 @@
 {% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/login.css" %}"> {% endblock %}
 <!-- BODY -->
 {% block content %}
-<div id="login-container">
+<div id="noti-container">
     {% if notificaciones %}
         {% for noti in notificaciones %}
-            <div class="message" >
-                {{ noti.description }}
-            </div>
+           <div class="panel panel-info">
+               <div class="panel-body">
+                   {{ noti.title }}
+               </div>
+               <div class="panel-footer">{{ noti.description }}</div>
+           </div>
         {% endfor %}
     {% else %}
         <h3>Sin notificaciones</h3>

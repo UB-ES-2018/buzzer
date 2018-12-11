@@ -54,7 +54,7 @@
 
                         <li><a href="{% url 'profile' user=user.username %}">{{ user.username }}</a></li>
                         <li id="buzz-button"><a>Buzzear</a></li>
-						<li ><a href="{% url 'message_notify' %}" class="button-badge" id="numero_de_notificaciones" >
+						<li ><a href="{% url 'message_notify' user %}" class="button-badge" id="numero_de_notificaciones" >
                             <i class="fa fa-envelope"></i> {{ user.profile.count_notification }}</a>
                         </li>
                         <li><a href="{% url 'logout' %}">Logout</a></li>
@@ -195,8 +195,8 @@
             wsStart = 'wss://';
         }
 
-        var endpoint = wsStart + loc.host + "/"+loc.pathname
-	    var socket = new ReconnectingWebSocket(endpoint)
+        var endpoint = wsStart + loc.host + "/"+loc.pathname;
+	    var socket = new ReconnectingWebSocket(endpoint);
 
         socket.onmessage = function(e) {
             console.log("message", e);
@@ -210,7 +210,7 @@
             $('#numero_de_notificaciones').text(notifications.toString());
             action_afegir_missatge(chatDataMsg.message,'dilluns');
             //chat_m.append("<br>" + chatDataMsg.message + "</br>");
-        }
+        };
         socket.onopen  = function(e){
             console.log("open",e);
             formData.submit(function(event){
