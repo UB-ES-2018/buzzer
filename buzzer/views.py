@@ -233,7 +233,7 @@ def logo_interaction(request, user=""):
     if not user:
         return HttpResponseRedirect(reverse("login"))
     else:
-        self.profile(request, user)
+        return profile(request, user)
 
 def profile(request, user=""):  # TEMPORAL
 
