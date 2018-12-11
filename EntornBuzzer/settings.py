@@ -130,6 +130,9 @@ STATICFILES_DIRS = [
 # Redirect after successful login
 LOGIN_REDIRECT_URL = '/'
 
+# Redirect for login
+LOGIN_URL = 'login'
+
 MESSAGE_TAGS = {
    messages.ERROR: 'danger'
 }

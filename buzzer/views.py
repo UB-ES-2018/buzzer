@@ -138,7 +138,6 @@ def loginView(request):
 @login_required
 def logoutView(request):
     logout(request)
-
     # Redirect to a success page.
     return HttpResponseRedirect(reverse("index"))
 
@@ -168,23 +167,24 @@ def buzzSearchH(request, search_tag):
     return response
 
 
-def searchView(request, search_hastag):
+def searchView(request, search_hastag=""):
     missatges = []
-    if search_hastag != "":
+    if search_hastag:
         search_text = search_hastag
     else:
         search_text = request.POST.get('search_text')
 
-    if search_text is not None and search_text != "":
+    if search_text:
         search_hash = search_text.split(" ")
+
         if search_hash[0][0] == "#":
             buzzs = []
             for hashtag in search_hash:
                 buzzs += buzzSearch(request, hashtag)
             args = {'buzzs': buzzs, 'search_text': search_text, 'hashtag': True, 'missatges': missatges}
-            return render(request, 'search.html', args);
-        if request.method == "POST":
+            return render(request, 'search.html', args)
 
+        if request.method == "POST":
             users = userSearch(request, search_text)
             buzzs = buzzSearch(request, search_text)
             args = {'users': users, 'buzzs': buzzs, 'search_text': search_text, 'hashtag':False , 'missatges': missatges }
@@ -205,45 +205,44 @@ def actualizarProfile(request, user=""):
         usuario = User.objects.filter(username=request.user).first()
         profile = usuario.profile
 
-        if first_name != '':
+        if first_name:
             usuario.first_name = first_name
-        if last_name != '':
+        if last_name:
             usuario.last_name = last_name
-        if email != '':
+        if email:
             usuario.email = email
-        if screen_name != '':
+        if screen_name:
             profile.screen_name = screen_name
-        if location != '':
+        if location:
             profile.location = location
-        if url != '':
+        if url:
             profile.url = url
-        if bio != '':
+        if bio:
             profile.bio = bio
-        if birthday != '':
+        if birthday:
             profile.birthday = birthday
 
         profile.save()
         usuario.save()
 
-        return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
     return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
-def logo_interaction(request, user=""):
+
+def profile(request, user=""):
     # If the username is blank, redirect to login
     if not user:
         return HttpResponseRedirect(reverse("login"))
     else:
-        return profile(request, user)
+        return getProfile(request, user)
 
-def profile(request, user=""):  # TEMPORAL
 
+def getProfile(request, user=""):
     if request.method == "GET":
         profile = User.objects.filter(username=user)
         posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
         form = PostForm()
         form2 = Profile2Form()
         args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first()}
-
 
         return render(request, 'profile.html', args)
 
@@ -274,9 +273,8 @@ def profile(request, user=""):  # TEMPORAL
             return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
 
-
 @login_required
-def post_new(request):
+def new_post(request):
     if request.method == "POST":
         form = PostForm(request.POST, request.FILES)
 
@@ -307,6 +305,7 @@ def post_new(request):
 def isMultimedia(type): # Returns true if the file is multimedia, or if there's no file
     return type == 'image' or type == 'video' or type == 'audio' or type == ''
 
+
 def load_image(request):
     instance = get_object_or_404(Profile, user=request.user)
 
@@ -327,35 +326,15 @@ def load_image(request):
     return render(request, 'edit.html', {'form': form})
 
 
-
-
-
-
 def posts_hashtags(user,tag):
-    posts =Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
+    posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
     post_list = []
     for post in posts:
         for palabra in post.text.split():
-            #print(palabra,tag)
             if(palabra==tag): # El post tiene el tag
                 post_list.append(post)
                 break
     return post_list
-
-# define equal in lists
-def equal_list(list1,list2):
-    list1.sort()
-    list2.sort()
-    equals = True
-    if len(list1) != len(list2):
-        equals = False
-    else:
-        for i in range(len(list1)):
-            if list1[i] != list2[i]:
-                equals = False
-                break
-
-    return equals
 
 
 @login_required
@@ -400,11 +379,12 @@ def conversation(request, user):
 
         return HttpResponseRedirect(reverse("chat", kwargs={'user': user}))
 
+
 # search list of chats of one user
 def search_chats(user_name):
     userchat = User.objects.get(username=user_name)
-    list_of_chats = userchat.chat_set.all()
-    return list_of_chats
+    return userchat.chat_set.all()
+
 
 # create a chat and return
 def create_chat(users_list,chat_name=""):
@@ -420,31 +400,30 @@ def create_chat(users_list,chat_name=""):
 
     return chat
 
-# search chat of a list of users  (if the chat doesnt exist it will be created)
-#    enter a list of names of all users (first sender)
-#    return chat
-def search_chat(list_of_user_names):
-    list_of_chats = search_chats(list_of_user_names[0])
-    found = False
-    list_of_member_names = []
 
-    for chat in list_of_chats:
-        list_of_member_names = []
+# Search a chat of a list of users, creates the chat if it doesn't exist
+# Receives a list with the name of every user, sender being the first one
+def search_chat(username_list):
+    chat_list = search_chats(username_list[0])
+    member_list = []
+
+    # Search the chat
+    for chat in chat_list:
+        member_list = []
         for member in  chat.members.all():
-            list_of_member_names.append(member.username)
-        if equal_list(list_of_member_names,list_of_user_names):
-            found= True
-            chat_return = chat
-            break
+            member_list.append(member.username)
 
-    if (not found):
-       list_of_users = []
-       for user_name in list_of_user_names:
-           user = User.objects.get(username=user_name)
-           list_of_users.append(user)
-       chat_return = create_chat(list_of_users)
+        # If the two lists are equal we found the chat
+        if sorted(member_list) == sorted(username_list):
+            return chat
 
-    return chat_return
+    # If the chat is not found we create it
+    list_of_users = []
+    for user_name in username_list:
+        user = User.objects.get(username=user_name)
+        list_of_users.append(user)
+    return create_chat(list_of_users)
+
 
 # create message
 def create_message(chat_id,user_name,text_message):
