@@ -146,7 +146,7 @@
                 $('<a href=\"' + '{% url 'profile' user=message.user %}' + '\">').appendTo($('#id_contenidor'));
                     $('<img class="pfp" src="' + '{{ message.user.profile.image.url}}' + '"></a>').appendTo($('#id_contenidor'));
                 $('<div class="names">').appendTo($('#id_contenidor'));
-                    $('<a href="' + url + '"><h4 class="username">' + {{message.user.profile.screen_name}} + '</h4></a>').appendTo($('#id_contenidor'));
+                    $('<a href="' + '{% url \'profile\' user=message.user.username %}' + '"><h4 class="username">' + {{message.user.profile.screen_name}} + '</h4></a>').appendTo($('#id_contenidor'));
                     $('<h5 class="usertag">@' + {{message.user.username}} + '</h5>').appendTo($('#id_contenidor'));
             $('</div></div>').appendTo($('#id_contenidor'));
             $('<div id="message_id">').appendTo($('#id_contenidor'));
