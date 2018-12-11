@@ -234,14 +234,14 @@ def actualizarProfile(request, user=""):
     return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
 @login_required
-def profile(request, user=""):  # TEMPORAL
+def profile(request, user):  # TEMPORAL
     if request.method == "GET":
         profile = User.objects.filter(username=user)
         posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
         form = PostForm()        
         form2 = Profile2Form()
 
-        isFollowed = is_follow(user, request.user)
+        isFollowed = is_follow(request.user, user)
 
         args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first(), 'isFollowed': isFollowed}
 
@@ -401,7 +401,8 @@ def follow_toggle(request):
     profile = request.GET.get('profile', None)
 
     if not user or not profile:
-        return {'followers': -1}
+        messages.error(request, "Acceso denegado")
+        return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
 
     if is_follow(user, profile):
         unfollow(user, profile)
@@ -499,6 +500,7 @@ def is_follow(follower_name,followed_name):
     follower = User.objects.get(username=follower_name)
     followed = User.objects.get(username=followed_name)
     list_of_follows = Follow.objects.filter(follower=follower,followed=followed)
+
     return(list_of_follows.count() != 0)  
 
 # create a new follow

@@ -15,9 +15,18 @@ $(document).ready(function(){
 			dataType: 'json',
 			success: function(data){
 				$("#count_follower").text(data.followers);
-				$("#btn-follow").toggleClass("btn-primary")
-				$("#btn-follow").toggleClass("btn-success")			
+
+				$("#btn-follow").toggleClass("btn-primary");
+				$("#btn-follow").toggleClass("btn-success");
+
+				var isFollowed = ($("#btn-follow").hasClass("btn-success"));
+
+				if(isFollowed){
+					$("#btn-follow-text").text("Siguiendo");					
+				} else{
+					$("#btn-follow-text").text("Seguir");
+				}
 			}
-		})
+		});
 	});
 });
