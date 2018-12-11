@@ -9,7 +9,7 @@
     {% if notificaciones %}
         {% for noti in notificaciones %}
             <div class="message" >
-                
+                {{ noti.description }}
             </div>
         {% endfor %}
     {% else %}
