@@ -20,22 +20,22 @@ def index(request):
         return render(request, "login.html")
 
 
-# List All Users or List one (username)
-@login_required
-def users(request, user=""):
-    response = "You aren't admin"
-    if request.user.is_superuser:
-        if user:
-            response = "You're looking for user from %s <BR>" % user
-            list_of_users = User.objects.filter(username=user)
-            response = response + '<BR> <li>' + '<BR> <li>'.join(
-                [str(user.id) + " - " + str(user) for user in list_of_users])
-        else:
-            response = "You're looking all Users"
-            list_of_users = User.objects.filter()
-            response = response + '<BR> <li>' + '<BR> <li>'.join(
-                [str(user.id) + " - " + str(user) for user in list_of_users])
-    return HttpResponse(response)
+# # List All Users or List one (username)
+# @login_required
+# def users(request, user=""):
+#     response = "You aren't admin"
+#     if request.user.is_superuser:
+#         if user:
+#             response = "You're looking for user from %s <BR>" % user
+#             list_of_users = User.objects.filter(username=user)
+#             response = response + '<BR> <li>' + '<BR> <li>'.join(
+#                 [str(user.id) + " - " + str(user) for user in list_of_users])
+#         else:
+#             response = "You're looking all Users"
+#             list_of_users = User.objects.filter()
+#             response = response + '<BR> <li>' + '<BR> <li>'.join(
+#                 [str(user.id) + " - " + str(user) for user in list_of_users])
+#     return HttpResponse(response)
 
 
 # List All Users+Profile or List one (username)

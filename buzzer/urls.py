@@ -22,8 +22,8 @@ urlpatterns = [
     url(r'^message/(?P<user>.*)/$', views.conversation, name="chat"),
 
     # Browser DBs
-    url(r'^users/$', views.users, name='users'),
-    url(r'^users/(?P<user>.*)/$', views.users, name='users'),  
+    # url(r'^users/$', views.users, name='users'),
+    # url(r'^users/(?P<user>.*)/$', views.users, name='users'),  
     url(r'^profiles/$', views.profiles, name='profiles'),
     url(r'^profiles/(?P<user>.*)/$', views.profiles, name='profiles'),    
     url(r'^buzzs/$', views.buzzs, name='buzzs'),

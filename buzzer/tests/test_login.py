@@ -14,7 +14,7 @@ class Test_Login(TestCase):
     @classmethod
     def setUpTestData(cls):
         print("setUpTestData") # Run once to set up non-modified data for all class methods
-        user1 = User.objects.create(username='u1',password='psw1')
+        user1 = User.objects.create_user(username='u1',password='psw1')
            
         pass
 
@@ -25,10 +25,18 @@ class Test_Login(TestCase):
     
     def test_login(self):
         c = Client() 
-        response = c.post('/buzzer/login/', {'username': 'us1', 'password': 'psw1'})       
+
+        response = c.post('/buzzer/login/', {'username': 'u1', 'password': 'psw1'}, follow=True)             
         self.assertEquals(200,response.status_code)
+        self.assertTrue(response.context['user'].is_authenticated)
+
+        response = c.get('/buzzer/logout', follow=True)
+        self.assertEquals(200,response.status_code)
+        self.assertFalse(response.context['user'].is_authenticated)
+
         response = c.post('/buzzer/login/', {'username': '', 'password': 'psw1'})     
-        self.assertEquals(200,response.status_code)       
+        self.assertEquals(200,response.status_code)
+        self.assertFalse(response.context['user'].is_authenticated)       
         pass 
     
    
