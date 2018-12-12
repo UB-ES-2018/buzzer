@@ -1,12 +1,12 @@
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile, Buzz, Hashtag, Message, Chat
+from .models import Profile, Buzz, Hashtag, Message, Chat, Follow
 from .forms import PostForm, ProfileForm, Profile2Form, PMessageForm
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
@@ -15,12 +15,13 @@ from django.contrib.auth import login, authenticate, logout
 def index(request):
     if (request.user.is_authenticated):
         form = PostForm()
-        return render(request, 'testLogin.html', {'form': form})
+        return render(request, 'profile.html', {'form': form})
     else:
-        return render(request, "signup.html")
+        return render(request, "login.html")
 
 
 # List All Users or List one (username)
+@login_required
 def users(request, user=""):
     response = "You aren't admin"
     if request.user.is_superuser:
@@ -38,6 +39,7 @@ def users(request, user=""):
 
 
 # List All Users+Profile or List one (username)
+@login_required
 def profiles(request, user=""):
     response = "You aren't admin"
     if request.user.is_superuser:
@@ -55,6 +57,7 @@ def profiles(request, user=""):
 
 
 # List All Buzzs or List of one username
+@login_required
 def buzzs(request, user=""):
     response = "You aren't admin"
     if request.user.is_superuser:
@@ -104,12 +107,13 @@ def signupView(request):
                 if user.is_active:  # Active user are not banned users
                     login(request, user)
                     # Redirect to a success page.
-                    return HttpResponseRedirect(reverse('index'))
+                    return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
             # mensage de error
             missatges.append('No se ha podido agregar el usuario')
             return render(request, "signup.html")
 
     else:
+        missatges.append('no es metode post')
         return render(request, "signup.html")
 
 
@@ -122,7 +126,7 @@ def loginView(request):
         if user.is_active:  # Active user are not banned users
             login(request, user)
             # Redirect to a success page.
-            return HttpResponseRedirect(reverse('index'))
+            return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
         else:  # User is banned
             raise forms.ValidationError(_("This account is banned."), code='inactive', )
@@ -167,7 +171,7 @@ def buzzSearchH(request, search_tag):
     response = post_list
     return response
 
-
+@login_required
 def searchView(request, search_hastag=""):
     missatges = []
     if search_hastag != "":
@@ -191,6 +195,7 @@ def searchView(request, search_hastag=""):
             return render(request, 'search.html', args)
     return render(request, 'search.html')
 
+@login_required
 def actualizarProfile(request, user=""):
     form2 = Profile2Form(request.POST)
     if form2.is_valid():
@@ -228,15 +233,17 @@ def actualizarProfile(request, user=""):
         return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
     return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
-
-def profile(request, user=""):  # TEMPORAL
+@login_required
+def profile(request, user):  # TEMPORAL
     if request.method == "GET":
         profile = User.objects.filter(username=user)
         posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
         form = PostForm()        
         form2 = Profile2Form()
-        args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first()}
 
+        isFollowed = is_follow(request.user, user)
+
+        args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first(), 'isFollowed': isFollowed}
 
         return render(request, 'profile.html', args)
 
@@ -300,6 +307,7 @@ def post_new(request):
 def isMultimedia(type): # Returns true if the file is multimedia, or if there's no file
     return type == 'image' or type == 'video' or type == 'audio' or type == ''
 
+@login_required
 def load_image(request):
     instance = get_object_or_404(Profile, user=request.user)
 
@@ -318,11 +326,6 @@ def load_image(request):
         form = ProfileForm()
 
     return render(request, 'edit.html', {'form': form})
-
-
-
-
-
 
 def posts_hashtags(user,tag):
     posts =Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
@@ -402,6 +405,27 @@ def conversation(request, user):
 
         return HttpResponseRedirect(reverse("chat", kwargs={'user': user}))
 
+def follow_toggle(request):
+    user = request.GET.get('user', None)
+    profile = request.GET.get('profile', None)
+
+    if not user or not profile:
+        messages.error(request, "Acceso denegado")
+        return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
+
+    if is_follow(user, profile):
+        unfollow(user, profile)
+    else:
+        new_follow_usernames(user, profile)
+
+    profile_user = User.objects.get(username=profile)
+
+    data = {
+        'followers': profile_user.profile.count_follower
+    }
+
+    return JsonResponse(data)
+
 # search list of chats of one user
 def search_chats(user_name):
     userchat = User.objects.get(username=user_name)
@@ -479,3 +503,77 @@ def send_message(sender_name,receiver_name,text_message,notified):
     message.save()
 
     return message 
+
+# check follow relationship exists
+def is_follow(follower_name,followed_name):
+    follower = User.objects.get(username=follower_name)
+    followed = User.objects.get(username=followed_name)
+    list_of_follows = Follow.objects.filter(follower=follower,followed=followed)
+
+    return(list_of_follows.count() != 0)  
+
+# create a new follow
+def new_follow(follower,followed):
+    follows = Follow.objects.filter(follower=follower,followed=followed)
+    if not(follows): 
+        follow = Follow.objects.create(follower=follower,followed=followed)
+        follow.save()
+        follower.profile.count_followed += 1
+        follower.profile.save()  
+        followed.profile.count_follower += 1
+        followed.profile.save()
+    else:
+        follow = follows[0]        
+    return(follow)
+
+# create a new follow (usernames)
+def new_follow_usernames(follower_name,followed_name):
+    follower = User.objects.get(username=follower_name)
+    followed = User.objects.get(username=followed_name)   
+    follow = new_follow(follower,followed)    
+    return(follow)
+
+def unfollow(follower_name, followed_name):
+    follower = User.objects.get(username=follower_name)
+    followed = User.objects.get(username=followed_name)
+    list_of_follows = Follow.objects.filter(follower=follower,followed=followed)
+    
+    for follow in list_of_follows:
+        follow.delete()        
+        
+        follower.profile.count_followed -= 1
+        follower.profile.save()
+
+        followed.profile.count_follower -= 1
+        followed.profile.save()
+
+# search follows of an user (username)
+def search_follows(follower_name):
+     follower = User.objects.get(username=follower_name)              
+     return follower.profile.get_follows()
+
+# search followeds of an user (username)
+def search_followeds(follower_name):
+     follower = User.objects.get(username=follower_name)             
+     return follower.profile.get_followeds()
+
+# search followers of an user (username)
+def search_followers(followed_name):
+     followed = User.objects.get(username=followed_name)              
+     return followed.profile.get_followers()
+
+# create a new follow (followed) from a request
+def followCreate(request, follower="",followed=""):
+    follow = new_follow_usernames(follower,followed)
+    response = str(follow)
+    return HttpResponse(response)
+
+# search all follows (followeds) from a request
+def followSearch(request, follower=""):
+    follows = search_follows(follower)
+    response = "You're looking all follows relationship:"
+    response = response + '<BR> <li>' + '<BR> <li>'.join(
+         [str(follow) for follow in follows])
+
+    return HttpResponse(response)
+
