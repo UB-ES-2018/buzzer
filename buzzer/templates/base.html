@@ -187,8 +187,6 @@
 
         var formData = $("#form");
         var msgInput = $(".pmessage-input");
-
-        var chat_m = $(".message");
         var wsStart = 'ws://';
 
         if(loc.protocol == 'https:'){
@@ -201,6 +199,7 @@
         socket.onmessage = function(e) {
             console.log("message", e);
             var chatDataMsg = JSON.parse(e.data);
+            console.log(chatDataMsg);
             if (chatDataMsg.username == '{{ user.username }}') {
                 var notifications = chatDataMsg.num_sender;
             } else {
@@ -208,28 +207,38 @@
             }
 
             $('#numero_de_notificaciones').text(notifications.toString());
-            action_afegir_missatge(chatDataMsg.message,'dilluns');
-            //chat_m.append("<br>" + chatDataMsg.message + "</br>");
+            console.log('arriba');
+            if(chatDataMsg.message){
+                console.log('misatge');
+                action_afegir_missatge(chatDataMsg.message,'dilluns');
+            }
+
         };
+
+
         socket.onopen  = function(e){
             console.log("open",e);
-            formData.submit(function(event){
+            console.log(msgInput.val());
+            formData.submit(function (event) {
                 event.preventDefault();
                 var msgText = msgInput.val();
 
                 var finalData = {
                     'message': msgText,
-                }
+                };
                 socket.send(JSON.stringify(finalData));
-                formData[0].reset()
-            })
-        }
+                formData[0].reset();
+            });
+
+        };
+
         socket.onerror  = function(e){
-            console.log("error",e)
-        }
+            console.log("error",e);
+        };
+
         socket.onclose  = function(e){
-            console.log("close",e)
-        }
+            console.log("close",e);
+        };
 
     </script>
 	{% block scripts %}

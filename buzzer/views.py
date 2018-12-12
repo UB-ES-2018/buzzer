@@ -587,3 +587,7 @@ def message_notify(request, user=None):
 
     return render(request,'notifications.html',{'notificaciones': notify})
 #NIBRASS: envio notificaciones a html
+
+def search_notify(username):
+    user = User.objects.get(username=username)
+    return user
