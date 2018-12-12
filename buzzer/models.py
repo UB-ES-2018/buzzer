@@ -5,7 +5,6 @@ from datetime import datetime
 from django.db.models import Q
 
 
-
 # User:  auth_user (contrib.auth.User)
 #   user of Buzzer
 #
@@ -77,10 +76,6 @@ class Profile(models.Model):
         for follow in Follow.objects.filter(followed=self.user):
             followers.append(follow.follower)
         return followers
-
-            
-    
-
 
 # Buz: buzzer_buz
 #   posts of buzzer
@@ -172,6 +167,7 @@ class Message (models.Model):
         data += "  notified: " + str(self.notified)
                  
         return data
+
 
 # Follow: follow_buzzer
 #    follower follows followed

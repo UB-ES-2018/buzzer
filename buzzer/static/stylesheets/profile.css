@@ -68,6 +68,24 @@ body {
     margin-bottom: 10px;
 }
 
+.profile-container .bold{
+    font-weight: bold;
+}
+
+/*** FOLLOW CONTAINER ***/
+
+.follow-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;    
+}
+
+.follow-container button {
+    margin-right: 15px;
+}
+.follow-info {
+    margin-right: 15px;
+}
 
 /***  BUZZ CONTAINER ***/
 
