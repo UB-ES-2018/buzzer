@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime
+from django.db.models import Q
 
 
 # User:  auth_user (contrib.auth.User)
@@ -30,7 +31,9 @@ class Profile(models.Model):
     url = models.CharField(max_length=150)  # URL provided by the user in association with their profile
     bio = models.CharField(max_length=150) # general information about user 
     birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
-    image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media')
+    image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media')# image user profil
+    count_follower = models.PositiveIntegerField(default=0) # number of users follows me  
+    count_followed = models.PositiveIntegerField(default=0) # number of users that I follow
 
     def __str__(self):
         return(self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name)
@@ -46,6 +49,8 @@ class Profile(models.Model):
         data += "  bio: " + self.bio
         data += "  birthday: " + str(self.birthday)
         data += "  image: " + str(self.image)
+        data += "  count_follower: " + str(self.count_follower)
+        data += "  count_followed: " + str(self.count_followed)
         return data
 
     def all_fields_user(self):
@@ -54,6 +59,21 @@ class Profile(models.Model):
         data += " first name: " + self.user.first_name + " last name: " + self.user.last_name
         data += " email: " + self.user.email
         return data
+
+    def get_follows(self): # return all follow-relationships (as follower and as followed)
+        return Follow.objects.filter(Q(follower=self.user) | Q(followed=self.user))
+        
+    def get_followeds(self):
+        followeds = []
+        for follow in Follow.objects.filter(follower=self.user):
+            followeds.append(follow.followed)
+        return followeds  
+
+    def get_followers(self):
+        followers = []
+        for follow in Follow.objects.filter(followed=self.user):
+            followers.append(follow.follower)
+        return followers
 
 
 # Buz: buzzer_buz
@@ -145,4 +165,18 @@ class Message (models.Model):
         data += "  notified: " + str(self.notified)
                  
         return data
- 
+
+
+# Follow: follow_buzzer
+#    follower follows followed
+class Follow (models.Model):
+    follower = models.ForeignKey(User, related_name="who_is_followed", on_delete=models.CASCADE) # user who follows
+    followed = models.ForeignKey(User, related_name="who_follows",on_delete=models.CASCADE) # user who is followed
+    created = models.DateTimeField(auto_now_add=True, db_index=True) # date of creation of relationship
+    rejected = models.DateTimeField(blank=True, null=True) # date of cancelation of relationship
+      
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return(self.follower.username + " follows " + self.followed.username) 
