@@ -562,6 +562,25 @@ def search_notifications(user):
     notifications = Notification.objects.filter(user_notify = user)
     return notifications
 
+# search all pending notifications of user
+def search_notifications_pending(user):
+    notifications = Notification.objects.filter(user_notify = user)
+    list_of_pending_notifications = []
+    for notification in notifications:
+        if not(notification.showed):
+            list_of_pending_notifications.append(notification)
+    return list_of_pending_notifications
+
+# set all pending notifications of user as showed (showed=True)
+def set_notifications_showed(user):
+    notifications = search_notifications_pending(user)
+    count_showed = 0
+    for notification in notifications:
+        notification.showed = True
+        notification.save()
+        count_showed += 1
+    user.profile.count_notification -= count_showed
+    user.profile.save() 
 
 def look_for_new_messages(user_name):
     user = User.objects.get(username=user_name) # We get the user
