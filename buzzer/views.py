@@ -360,12 +360,21 @@ def private_messages(request):
         user = request.user
         chat_list = search_chats(user.username)
         args = { "chats" : chat_list }
-    
         return render(request, "messages.html", args)
 
 
 @login_required
 def conversation(request, user):
+
+    try:
+        username = User.objects.get(username=user).username
+    except User.DoesNotExist:
+        username = None
+
+    if username is None:
+        messages.error(request, "ERROR: El usuario " + user + " no existe")
+        return HttpResponseRedirect(reverse("messages"))
+
     if request.method == "GET":
         people = [request.user.username, user]
         chat = search_chat(people)
@@ -551,12 +560,7 @@ def search_followeds(follower_name):
 # search followers of an user (username)
 def search_followers(followed_name):
      followed = User.objects.get(username=followed_name)              
-     return follower.profile.get_followers()
-
-# search follows of an user (username)
-def search_followers(followed_name):
-     followed = User.objects.get(username=followed_name)              
-     return follower.profile.get_followers()
+     return followed.profile.get_followers()
 
 # create a new follow (followed) from a request
 def followCreate(request, follower="",followed=""):
