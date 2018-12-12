@@ -3,7 +3,7 @@ from django.conf.urls import url
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator,OriginValidator
 
-from buzzer.consumers import ChatConsumer, NotiConsumer
+from buzzer.consumers import ChatConsumer, NotiConsumer,ProfileConsumer
 application = ProtocolTypeRouter({
     # Empty for now (http->django views is added by default)
     'websocket':AllowedHostsOriginValidator(
@@ -20,7 +20,8 @@ application = ProtocolTypeRouter({
                     url(r'^search/(?P<search_hastag>.*)/$', NotiConsumer),
                     url(r'^search/$', NotiConsumer),
 
-                    url(r'^profile/(?P<user>.*)/$', NotiConsumer),
+                    url(r'^profile/(?P<user>.*)/$', ProfileConsumer),
+                    url(r'^profile/$', NotiConsumer),
 
                 ]
             )

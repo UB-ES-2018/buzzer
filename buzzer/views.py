@@ -493,8 +493,7 @@ def send_message(sender_name,receiver_name,text_message,notified):
     message.content = text_message
     message.notified = notified
     message.save()
-    #NIBRASS: Añadimos nueva notificacion al mandar un mensaje
-    create_notification('Tienes un nuevo mensaje', 'El usuario' + sender_name + 'te ha mandado un mensaje nuevo', user_reciver, 2, message, None, None)
+    create_notification('Tienes un nuevo mensaje', 'El usuario' + sender_name + 'te ha mandado un mensaje nuevo', user_reciver, 1, message, None, None)
     return message 
 
 # check follow relationship exists
@@ -606,7 +605,6 @@ def message_notify(request, user=None):
     set_notifications_showed(user)
 
     return render(request,'notifications.html',{'notificaciones': notify})
-#NIBRASS: envio notificaciones a html
 
 def search_notify(username):
     user = User.objects.get(username=username)

@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 class ChatConsumer(AsyncConsumer):
     async def websocket_connect(self,event):
 
-        print("connected",event)
+        print("connected chat",event)
         other_user = self.scope['url_route']['kwargs']['user']
         me = self.scope['user']
         me = str(me)
@@ -32,50 +32,67 @@ class ChatConsumer(AsyncConsumer):
             "type": "websocket.accept"
         })
     async def websocket_receive(self,event):
-        print("received",event)
+        print("received chat",event)
         front_text = event.get('text',None)
         if front_text is not None:
             dict_data = json.loads(front_text)
-            msg = dict_data.get('message')
-            user = self.scope['user']
-            #NIBRASS: se consigue el nombre (str) i el objeto user
-            other_username = self.scope['url_route']['kwargs']['user']
-            other_user = User.objects.get(username=other_username)
-            me = str(user)
-            print(me)
+            text = dict_data.get('message')
+            tipo = dict_data.get('type')
+            if tipo == 'msg':
+                print('msg')
+                dict_data = json.loads(front_text)
+                msg = dict_data.get('message')
+                user = self.scope['user']
+                other_username = self.scope['url_route']['kwargs']['user']
+                other_user = User.objects.get(username=other_username)
+                me = str(user)
+                print(me)
+                id = await self.get_id(me,other_username)
+                save_msg = views.send_message(me,other_username,msg,notified='False')
 
-            id = await self.get_id(me,other_username)
-            #print(id.id_chat)
-            # Guardamos
-            save_msg = views.send_message(me,other_username,msg,notified='False')
-            #save_noti = views.create_notification(msg, "", other_user, 1, message=msg, buzz=None, follower=None)
-            #print(save_noti)
+                username = 'default'
+                num_noti_sender = None
+                num_noti_reciver = None
+                if user.is_authenticated:
+                    username= user.username
+                    num_noti_sender = user.profile.count_notification
+                    num_noti_reciver = other_user.profile.count_notification
 
-            username = 'default'
-            num_noti_sender = None
-            num_noti_reciver = None
-            if user.is_authenticated:
-                username= user.username
-                chat = views.look_for_new_messages(other_username)
-                num_noti_sender = user.profile.count_notification
-                num_noti_reciver = other_user.profile.count_notification
-            # NIBRASS: se consigue el numero de notis
+                myResponse = {
+                    'message': msg,
+                    'username':username,
+                    'num_sender': num_noti_sender,
+                    'num_reciver': num_noti_reciver,
 
-            myResponse = {
-                'message': msg,
-                'username':username,
-                'num_sender': num_noti_sender,
-                'num_reciver': num_noti_reciver,
-
-            }
-            await self.channel_layer.group_send(
-                self.chat_room,
-                {
-                    "type": "chat_message",
-                    "text": json.dumps(myResponse)
                 }
-            )
+                await self.channel_layer.group_send(
+                    self.chat_room,
+                    {
+                        "type": "chat_message",
+                        "text": json.dumps(myResponse)
+                    }
+                )
+            else:
+                print('noti')
+                user = self.scope['user']
+                me = str(user)
+                username = 'default'
+                num_noti_sender = None
 
+                if user.is_authenticated:
+                    username = user.username
+                    num_noti_sender = user.profile.count_notification
+
+                myResponse = {
+                    'username': username,
+                    'num_sender': num_noti_sender,
+
+                }
+
+                await self.send({
+                    "type": "websocket.send",
+                    "text": json.dumps(myResponse)
+                })
 
 
     async def chat_message(self,event):
@@ -96,28 +113,31 @@ class ChatConsumer(AsyncConsumer):
 class NotiConsumer(AsyncConsumer):
     async def websocket_connect(self,event):
         print("connected notification", event)
-        user = self.scope['user']
-        me = str(user)
-        print(me)
-        thread_obj = await self.get_id(me)
-        notification_change = f"thread_{thread_obj.profile.count_notification}"
-        self.notification_change = notification_change
-        await self.channel_layer.group_add(
-            notification_change,
-            self.channel_name
-        )
-
         await self.send({
             "type": "websocket.accept"
         })
+        user = self.scope['user']
+        me = str(user)
+        thread_obj = await self.get_id(me)
+        notification_change = f"thread_{thread_obj.profile.count_notification}"
+        myResponse = {
+            'username': me,
+            'num_sender': user.profile.count_notification,
+
+        }
+        await self.send({
+            "type": "websocket.send",
+            "text": json.dumps(myResponse)
+        })
 
     async def websocket_receive(self,event):
-        print("sended event")
+        #print("received notification", event)
         user = self.scope['user']
         me = str(user)
         print(me)
         username = 'default'
         num_noti_sender = None
+
         if user.is_authenticated:
             username = user.username
             num_noti_sender = user.profile.count_notification
@@ -127,20 +147,60 @@ class NotiConsumer(AsyncConsumer):
             'num_sender': num_noti_sender,
 
         }
-        await self.channel_layer.group_send(
-            self.notification_change,
-            {
-                "type": "notification_change",
-                "text": json.dumps(myResponse),
-            }
-        )
 
-    async def notification_change(self, event):
         await self.send({
             "type": "websocket.send",
-            "text": event['text'],
+            "text": json.dumps(myResponse)
+        })
+    async def websocket_disconnect(self, event):
+        print("disconnected", event)
+
+    async def get_id(self,me):
+        return views.search_notify(me)
+
+
+
+class ProfileConsumer(AsyncConsumer):
+    async def websocket_connect(self,event):
+        print("connected profile", event)
+        await self.send({
+            "type": "websocket.accept"
+        })
+        user = self.scope['user']
+        me = str(user)
+        print(me)
+
+        myResponse = {
+            'username': me,
+            'num_sender': user.profile.count_notification,
+
+        }
+        await self.send({
+            "type": "websocket.send",
+            "text": json.dumps(myResponse)
         })
 
+    async def websocket_receive(self,event):
+        #print("received profile", event)
+        user = self.scope['user']
+        me = str(user)
+        print(me)
+        username = 'default'
+        num_noti_sender = None
+        if user.is_authenticated:
+            username = user.username
+            num_noti_sender = user.profile.count_notification
+        #print(num_noti_sender)
+        myResponse = {
+            'username': username,
+            'num_sender': num_noti_sender,
+
+        }
+
+        await self.send({
+            "type": "websocket.send",
+            "text": json.dumps(myResponse)
+        })
     async def websocket_disconnect(self, event):
         print("disconnected", event)
 

@@ -197,17 +197,17 @@
 	    var socket = new ReconnectingWebSocket(endpoint);
 
         socket.onmessage = function(e) {
-            console.log("message", e);
+
             var chatDataMsg = JSON.parse(e.data);
-            console.log(chatDataMsg);
             if (chatDataMsg.username == '{{ user.username }}') {
                 var notifications = chatDataMsg.num_sender;
+                console.log(notifications);
             } else {
                 var notifications = chatDataMsg.num_reciver;
             }
 
             $('#numero_de_notificaciones').text(notifications.toString());
-            console.log('arriba');
+
             if(chatDataMsg.message){
                 console.log('misatge');
                 action_afegir_missatge(chatDataMsg.message,'dilluns');
@@ -215,7 +215,14 @@
 
         };
 
-
+        window.setInterval(function (event) {
+            console.log('interval');
+            var finalData = {
+                    'type': 'noti',
+                    'message': "",
+                };
+                socket.send(JSON.stringify(finalData));
+        }, 5000);
         socket.onopen  = function(e){
             console.log("open",e);
             console.log(msgInput.val());
@@ -224,6 +231,7 @@
                 var msgText = msgInput.val();
 
                 var finalData = {
+                    'type': 'msg',
                     'message': msgText,
                 };
                 socket.send(JSON.stringify(finalData));
