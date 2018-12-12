@@ -36,7 +36,6 @@ class Profile(models.Model):
     count_followed = models.PositiveIntegerField(default=0) # number of users that I follow
     count_notification = models.PositiveIntegerField(default=0) # number of notifications pending (to be showed)    
 
-
     def __str__(self):
         return(self.user.username + " - " + self.screen_name + " - " + self.user.first_name + " - " + self.user.last_name)
 
@@ -51,6 +50,8 @@ class Profile(models.Model):
         data += "  bio: " + self.bio
         data += "  birthday: " + str(self.birthday)
         data += "  image: " + str(self.image)
+        data += "  count_follower: " + str(self.count_follower)
+        data += "  count_followed: " + str(self.count_followed)
         return data
 
     def all_fields_user(self):
@@ -74,7 +75,7 @@ class Profile(models.Model):
         for follow in Follow.objects.filter(followed=self.user):
             followers.append(follow.follower)
         return followers
- 
+
 
 # Buz: buzzer_buz
 #   posts of buzzer
@@ -225,4 +226,3 @@ class Notification (models.Model):
                 data += "  follower: " + str(self.follower)
         return data
 
- 

@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
@@ -246,14 +246,16 @@ def actualizarProfile(request, user=""):
     return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
 @login_required
-def profile(request, user=""):  # TEMPORAL
+def profile(request, user):  # TEMPORAL
     if request.method == "GET":
         profile = User.objects.filter(username=user)
         posts = Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
         form = PostForm()        
         form2 = Profile2Form()
-        args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first()}
 
+        isFollowed = is_follow(request.user, user)
+
+        args = {'posts': posts, 'form': form, 'form2': form2, 'profile': profile.first(), 'isFollowed': isFollowed}
 
         return render(request, 'profile.html', args)
 
@@ -345,11 +347,6 @@ def load_image(request):
 
     return render(request, 'edit.html', {'form': form})
 
-
-
-
-
-
 def posts_hashtags(user,tag):
     posts =Buzz.objects.filter(published_date__lte=timezone.now()).order_by('published_date').filter(user__username=user)
     post_list = []
@@ -387,6 +384,16 @@ def private_messages(request):
 
 @login_required
 def conversation(request, user):
+
+    try:
+        username = User.objects.get(username=user).username
+    except User.DoesNotExist:
+        username = None
+
+    if username is None:
+        messages.error(request, "ERROR: El usuario " + user + " no existe")
+        return HttpResponseRedirect(reverse("messages"))
+
     if request.method == "GET":
         people = [request.user.username, user]
         chat = search_chat(people)
@@ -416,6 +423,27 @@ def conversation(request, user):
             msg.save()
 
         return HttpResponseRedirect(reverse("chat", kwargs={'user': user}))
+
+def follow_toggle(request):
+    user = request.GET.get('user', None)
+    profile = request.GET.get('profile', None)
+
+    if not user or not profile:
+        messages.error(request, "Acceso denegado")
+        return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
+
+    if is_follow(user, profile):
+        unfollow(user, profile)
+    else:
+        new_follow_usernames(user, profile)
+
+    profile_user = User.objects.get(username=profile)
+
+    data = {
+        'followers': profile_user.profile.count_follower
+    }
+
+    return JsonResponse(data)
 
 # search list of chats of one user
 def search_chats(user_name):
@@ -501,7 +529,8 @@ def is_follow(follower_name,followed_name):
     follower = User.objects.get(username=follower_name)
     followed = User.objects.get(username=followed_name)
     list_of_follows = Follow.objects.filter(follower=follower,followed=followed)
-    return(len(list_of_follows) != 0)  
+    return(list_of_follows.count() != 0)  
+
 
 # create a new follow
 def new_follow(follower,followed):
@@ -524,6 +553,22 @@ def new_follow_usernames(follower_name,followed_name):
     follow = new_follow(follower,followed)    
     return(follow)
 
+  
+def unfollow(follower_name, followed_name):
+    follower = User.objects.get(username=follower_name)
+    followed = User.objects.get(username=followed_name)
+    list_of_follows = Follow.objects.filter(follower=follower,followed=followed)
+    
+    for follow in list_of_follows:
+        follow.delete()        
+        
+        follower.profile.count_followed -= 1
+        follower.profile.save()
+
+        followed.profile.count_follower -= 1
+        followed.profile.save()
+
+
 # search follows of an user (username)
 def search_follows(follower_name):
      follower = User.objects.get(username=follower_name)              
@@ -538,6 +583,21 @@ def search_followeds(follower_name):
 def search_followers(followed_name):
      follower = User.objects.get(username=followed_name)
      return follower.profile.get_followers()
+  
+  # create a new follow (followed) from a request
+def followCreate(request, follower="",followed=""):
+    follow = new_follow_usernames(follower,followed)
+    response = str(follow)
+    return HttpResponse(response)
+
+# search all follows (followeds) from a request
+def followSearch(request, follower=""):
+    follows = search_follows(follower)
+    response = "You're looking all follows relationship:"
+    response = response + '<BR> <li>' + '<BR> <li>'.join(
+         [str(follow) for follow in follows])
+
+    return HttpResponse(response)
 
 # create new notification
 def create_notification(title, description, user_notify, type_notification, message=None, buzz=None, follower=None):
@@ -609,3 +669,4 @@ def message_notify(request, user=None):
 def search_notify(username):
     user = User.objects.get(username=username)
     return user
+
