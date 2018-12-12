@@ -104,6 +104,8 @@
                 {% for x in buzz.text|lista_hash %}
                     {% if x.0 == "#"  %}
                         <a href="{% url 'search' x %}">{{ x }}</a>
+                    {% elif x.0 == "@" %}
+                        <a href="{% url 'search' x %}">{{ x }}</a>
                     {% else %}
                         {{ x }}
                     {% endif %}

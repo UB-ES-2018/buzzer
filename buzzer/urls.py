@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^profile/(?P<user>.*)/$', views.profile, name='profile'),
     url(r'^actualizarProfile/(?P<user>.*)/$', views.actualizarProfile, name='actualizarProfile'),
     url(r'^messages/$', views.private_messages, name='messages'),
+    url(r'^message/$', views.conversation, name="chat"),
     url(r'^message/(?P<user>.*)/$', views.conversation, name="chat"),
     url(r'^followCreate/(?P<follower>.*)/(?P<followed>.*)/$', views.followCreate, name='followCreate'),
     url(r'^followSearch/(?P<follower>.*)/$', views.followSearch, name='followSearch'),
@@ -34,6 +35,9 @@ urlpatterns = [
     url(r'^buzzs/$', views.buzzs, name='buzzs'),
     url(r'^buzzs/(?P<user>.*)/$', views.buzzs, name='buzzs'),
     url(r'^upload/$', views.load_image, name='load_image'),
+
+    url(r'^notify/$', views.message_notify, name='message_notify'),
+    url(r'^notify/(?P<user>.*)/$', views.message_notify, name='message_notify'),
 
 
 ]

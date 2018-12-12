@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+<!-- HEAD -->
+{% block title %}Buzzer - Test login{% endblock %}
+{% load static %}
+{% block stylesheets %} <link rel="stylesheet" type="text/css" href="{% static "stylesheets/login.css" %}"> {% endblock %}
+<!-- BODY -->
+{% block content %}
+<div id="noti-container">
+    {% if notificaciones %}
+        {% for noti in notificaciones %}
+           <div class="panel panel-info span-6">
+               <div class="panel-body">
+                   {{ noti.title }}
+               </div>
+               <div class="panel-footer">{{ noti.description }}<br><a href="{% url 'chat' user=noti.message %}">Ver Mensaje</a> </div>
+           </div>
+        {% endfor %}
+    {% else %}
+        <h3>Sin notificaciones</h3>
+    {% endif %}
+</div>
+{% endblock %}

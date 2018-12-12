@@ -73,26 +73,28 @@
     <!-- MENSAJES -->
     <div class="message-container">
         <h3>Mensajes de <span>{{ profile.profile.screen_name }}</span></h3>
-
+        <div id="id_contenidor">
         {% for message in pmessages %}
-            <div class="message">
+            <div class="message" >
                 <div class="basic-info">
-                    <a href="{% url 'profile' user=message.user}">
+                    <a href="{% url 'profile' user=message.user %}">
                         <img class="pfp" src="{{ message.user.profile.image.url}}"></a>
                     <div class="names">
                         <a href="{% url 'profile' user=message.user.username %}"><h4 class="username">{{message.user.profile.screen_name}}</h4></a>
                         <h5 class="usertag">@{{message.user.username}}</h5>
                     </div>
                 </div>
+				<div id="message_id">
                 <br>
                 {{ message.content }}
                 <br>
+				</div>
                 <div class="message-date">{{ message.date }} </div>
             </div>
         {% endfor %}
-
+        </div>
         <h3>Envía un mensaje:</h3>
-        <form action="{% url 'chat' user=profile.username %}" method="POST" class="msg-form">
+        <form  id='form' action="{% url 'chat' user=profile.username %}" method="POST" class="msg-form">
             {% csrf_token %}
                 {{ pform.as_p }}
             <button type="submit" class="save btn btn-default">Mensaje privado</button>
@@ -131,5 +133,43 @@
 
 <!-- SCRIPTS -->
 {% block scripts %}
-  <script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
+<script type="text/javascript" src="{% static "scripts/profile.js" %}"></script>
+
+<script type="text/javascript">
+    function action_afegir_missatge(msg_text,msg_data) {
+
+        var mensaje = '<div class="message" >' +
+            '                <div class="basic-info">' +
+            '                    <a href="">' +
+            '                        <img class="pfp" src=""></a>' +
+            '                    <div class="names">' +
+            '                        <a href=""><h4 class="username"></h4></a>' +
+            '                        <h5 class="usertag">@</h5>' +
+            '                    </div>' +
+            '                </div>' +
+            '<div class="message-text">' +
+            '                <br>' +
+            '                <p></p>' +
+            '                <br>' +
+            '</div>' +
+            '                <div class="message-date"></div>' +
+            '            </div>';
+
+        mensaje = $(mensaje);
+
+        mensaje.find(".message-text").first().children('p').html(msg_text);
+
+        mensaje.appendTo($('#id_contenidor'));
+
+
+
+    }
+
+
+
+
+
+
+</script>
+
 {% endblock %}

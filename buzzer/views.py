@@ -6,10 +6,11 @@ from django.urls import reverse
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile, Buzz, Hashtag, Message, Chat, Follow
+from .models import Profile, Buzz, Hashtag, Message, Chat, Follow, Notification
 from .forms import PostForm, ProfileForm, Profile2Form, PMessageForm
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
+import re
 
 # Create your views here.
 def index(request):
@@ -185,13 +186,24 @@ def searchView(request, search_hastag=""):
             buzzs = []
             for hashtag in search_hash:
                 buzzs += buzzSearch(request, hashtag)
-            args = {'buzzs': buzzs, 'search_text': search_text, 'hashtag': True, 'missatges': missatges}
+            args = {'buzzs': buzzs, 'search_text': search_text, 'hashtag': True, 'mencio': False, 'missatges': missatges}
             return render(request, 'search.html', args);
-        if request.method == "POST":
+        elif search_hash[0][0] == "@":
+            users = []
+            for search_text in search_hash:
+                users += userSearch(request, search_text[1:])
+            args = {'users': users, 'search_text': search_text, 'hashtag': False, 'mencio': True,
+                    'missatges': missatges}
+            return render(request, 'search.html', args);
+        elif request.method == "POST":
 
             users = userSearch(request, search_text)
             buzzs = buzzSearch(request, search_text)
-            args = {'users': users, 'buzzs': buzzs, 'search_text': search_text, 'hashtag':False , 'missatges': missatges }
+            args = {'users': users, 'buzzs': buzzs, 'search_text': search_text, 'hashtag':False , 'mencio':False, 'missatges': missatges }
+            return render(request, 'search.html', args)
+        else:
+            missatges.append('no se reconoce el texto')
+            args = {'missatges': missatges}
             return render(request, 'search.html', args)
     return render(request, 'search.html')
 
@@ -296,6 +308,14 @@ def post_new(request):
                 post.save()
             else:
                 messages.error(request, "El archivo introducido no es un archivo multimedia")
+            users = re.findall(r'@(\w+)',post.text)
+            for username in users:
+                user = get_object_or_404(User,username=username)
+                if user:
+                    print(user.username)
+                    create_notification('MENCION','El usuario ' + post.user.username + ' te ha mencionado', user, 2,
+                                        None, post, None)
+
 
         return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))
 
@@ -332,7 +352,6 @@ def posts_hashtags(user,tag):
     post_list = []
     for post in posts:
         for palabra in post.text.split():
-            #print(palabra,tag)
             if(palabra==tag): # El post tiene el tag
                 post_list.append(post)
                 break
@@ -496,12 +515,13 @@ def send_message(sender_name,receiver_name,text_message,notified):
     list_of_user_names = [sender_name,receiver_name]
     chat = search_chat(list_of_user_names)
     user = User.objects.get(username = sender_name)
+    user_reciver = User.objects.get(username=receiver_name)
     message = Message.objects.create(chat=chat,user=user)
     message.date = timezone.now()
     message.content = text_message
     message.notified = notified
     message.save()
-
+    create_notification('Tienes un nuevo mensaje', 'El usuario' + sender_name + 'te ha mandado un mensaje nuevo', user_reciver, 1, message, None, None)
     return message 
 
 # check follow relationship exists
@@ -509,8 +529,8 @@ def is_follow(follower_name,followed_name):
     follower = User.objects.get(username=follower_name)
     followed = User.objects.get(username=followed_name)
     list_of_follows = Follow.objects.filter(follower=follower,followed=followed)
-
     return(list_of_follows.count() != 0)  
+
 
 # create a new follow
 def new_follow(follower,followed):
@@ -533,6 +553,7 @@ def new_follow_usernames(follower_name,followed_name):
     follow = new_follow(follower,followed)    
     return(follow)
 
+  
 def unfollow(follower_name, followed_name):
     follower = User.objects.get(username=follower_name)
     followed = User.objects.get(username=followed_name)
@@ -547,6 +568,7 @@ def unfollow(follower_name, followed_name):
         followed.profile.count_follower -= 1
         followed.profile.save()
 
+
 # search follows of an user (username)
 def search_follows(follower_name):
      follower = User.objects.get(username=follower_name)              
@@ -559,10 +581,10 @@ def search_followeds(follower_name):
 
 # search followers of an user (username)
 def search_followers(followed_name):
-     followed = User.objects.get(username=followed_name)              
-     return followed.profile.get_followers()
-
-# create a new follow (followed) from a request
+     follower = User.objects.get(username=followed_name)
+     return follower.profile.get_followers()
+  
+  # create a new follow (followed) from a request
 def followCreate(request, follower="",followed=""):
     follow = new_follow_usernames(follower,followed)
     response = str(follow)
@@ -576,4 +598,75 @@ def followSearch(request, follower=""):
          [str(follow) for follow in follows])
 
     return HttpResponse(response)
+
+# create new notification
+def create_notification(title, description, user_notify, type_notification, message=None, buzz=None, follower=None):
+    notification = Notification(title = title ,description = description)
+    notification.save()
+    notification.user_notify = user_notify
+    notification.type_notification = type_notification
+    if type_notification==1: # notification of message
+        notification.message = message
+    else:    	
+        if type_notification==2:  # notification of buzz        
+            notification.buzz = buzz
+        else:  # notification of follower (type_notification==3)  
+            notification.buzz = follower
+    notification.save()
+    user_notify.profile.count_notification += 1
+    user_notify.profile.save()   
+
+# search all notification of user
+def search_notifications(user):
+    notifications = Notification.objects.filter(user_notify = user)
+    return notifications
+
+# search all pending notifications of user
+def search_notifications_pending(user):
+    notifications = Notification.objects.filter(user_notify = user)
+    list_of_pending_notifications = []
+    for notification in notifications:
+        if not(notification.showed):
+            list_of_pending_notifications.append(notification)
+    return list_of_pending_notifications
+
+# set all pending notifications of user as showed (showed=True)
+def set_notifications_showed(user):
+    notifications = search_notifications_pending(user)
+    count_showed = 0
+    for notification in notifications:
+        notification.showed = True
+        notification.save()
+        count_showed += 1
+    user.profile.count_notification -= count_showed
+    user.profile.save() 
+
+def look_for_new_messages(user_name):
+    user = User.objects.get(username=user_name) # We get the user
+    chats = user.chat_set.all()     # Get all the chats of the user
+    notify = {}
+    for chat in chats:
+        # Get all the messages of the chat
+        messages = messages_chat(chat.id_chat)
+        for i in range(len(messages)):
+            # If the message is not notified
+            if messages[i].notified == False:
+                # We add it to the notify dictionary
+                notify[i] = messages[i]
+    # return the dictionary
+    return notify
+
+def notified(notified):
+    pass
+
+def message_notify(request, user=None):
+    user = User.objects.get(username=request.user)  # We get the user
+    notify = search_notifications_pending(user)
+    set_notifications_showed(user)
+
+    return render(request,'notifications.html',{'notificaciones': notify})
+
+def search_notify(username):
+    user = User.objects.get(username=username)
+    return user
 
