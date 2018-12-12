@@ -3,7 +3,7 @@ from django.test import SimpleTestCase
 from django.test import Client
 from django.contrib.auth.models import User
 from ..models import Profile, Buzz, Hashtag, Chat, Message, Follow, Notification
-from ..views import search_chat,create_message,create_notification,search_notifications
+from ..views import search_chat,create_message,create_notification,search_notifications,search_notifications_pending,set_notifications_showed
 # TEST FEATURE NOTIFICATIONS 
 
 class Test_Message(TestCase):
@@ -46,4 +46,30 @@ class Test_Message(TestCase):
         list_of_notifications = search_notifications(user2)
         self.assertEquals(list_of_notifications[0].user_notify.username,'u2')
         pass
+
+    def test_search_notifications_pending(self):
+        # test function search_notifications_pending
+        text_message = 'test1'
+        user1 = User.objects.get(username='u1')
+        user2 = User.objects.get(username='u2')
+        list_of_users = [user1.username,user2.username]
+        chat = search_chat(list_of_users)
+        message1 = create_message(chat.id_chat,user1.username,text_message)
+        create_notification("message", "of  " + user1.username, user2, 1,message1,None,None)
+        list_of_notifications = search_notifications_pending(user2)
+        self.assertEquals(list_of_notifications[0].user_notify.username,'u2')
+        pass
    
+    def test_set_notifications_showed(self):
+        # test function set_notifications_showed
+        text_message = 'test1'
+        user1 = User.objects.get(username='u1')
+        user2 = User.objects.get(username='u2')
+        list_of_users = [user1.username,user2.username]
+        chat = search_chat(list_of_users)
+        message1 = create_message(chat.id_chat,user1.username,text_message)
+        create_notification("message", "of  " + user1.username, user2, 1,message1,None,None)
+        set_notifications_showed(user2)
+        user2 = User.objects.get(username='u2')
+        self.assertEquals(user2.profile.count_notification,0)
+        pass
