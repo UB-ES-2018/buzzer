@@ -20,62 +20,6 @@ def index(request):
     else:
         return render(request, "login.html")
 
-
-# List All Users or List one (username)
-@login_required
-def users(request, user=""):
-    response = "You aren't admin"
-    if request.user.is_superuser:
-        if user:
-            response = "You're looking for user from %s <BR>" % user
-            list_of_users = User.objects.filter(username=user)
-            response = response + '<BR> <li>' + '<BR> <li>'.join(
-                [str(user.id) + " - " + str(user) for user in list_of_users])
-        else:
-            response = "You're looking all Users"
-            list_of_users = User.objects.filter()
-            response = response + '<BR> <li>' + '<BR> <li>'.join(
-                [str(user.id) + " - " + str(user) for user in list_of_users])
-    return HttpResponse(response)
-
-
-# List All Users+Profile or List one (username)
-@login_required
-def profiles(request, user=""):
-    response = "You aren't admin"
-    if request.user.is_superuser:
-        if user:
-            response = "You're looking for user from %s <BR>" % user
-            list_of_users = User.objects.filter(username=user)
-            response = response + '<BR> <li>' + '<BR> <li>'.join(
-                [Profile.all_fields(user.profile) for user in list_of_users])
-        else:
-            response = "You're looking all Users"
-            list_of_users = User.objects.filter()
-            response = response + '<BR> <li>' + '<BR> <li>'.join(
-                [Profile.all_fields(user.profile) for user in list_of_users])
-    return HttpResponse(response)
-
-
-# List All Buzzs or List of one username
-@login_required
-def buzzs(request, user=""):
-    response = "You aren't admin"
-    if request.user.is_superuser:
-        if user:
-            response = "You're looking for buzz of user from %s <BR>" % user
-            list_of_users = User.objects.filter(username=user)
-            for userlist in list_of_users:
-                list_of_buzzs = Buzz.objects.filter(user_id=userlist.id)
-                response = response + '<BR> <li>' + '<BR> <li>'.join([Buzz.all_fields(buzz) for buzz in list_of_buzzs])
-        else:
-            response = "You're looking all Users"
-            list_of_buzzs = Buzz.objects.filter()
-            response = response + '<BR> <li>' + '<BR> <li>'.join([Buzz.all_fields(buzz) for buzz in list_of_buzzs])
-
-    return HttpResponse(response)
-
-
 def signupView(request):
     missatges = []
     if request.method == 'POST':
@@ -529,8 +473,7 @@ def is_follow(follower_name,followed_name):
     follower = User.objects.get(username=follower_name)
     followed = User.objects.get(username=followed_name)
     list_of_follows = Follow.objects.filter(follower=follower,followed=followed)
-    return(list_of_follows.count() != 0)  
-
+    return(list_of_follows.count() != 0)
 
 # create a new follow
 def new_follow(follower,followed):
@@ -553,7 +496,6 @@ def new_follow_usernames(follower_name,followed_name):
     follow = new_follow(follower,followed)    
     return(follow)
 
-  
 def unfollow(follower_name, followed_name):
     follower = User.objects.get(username=follower_name)
     followed = User.objects.get(username=followed_name)
@@ -568,7 +510,6 @@ def unfollow(follower_name, followed_name):
         followed.profile.count_follower -= 1
         followed.profile.save()
 
-
 # search follows of an user (username)
 def search_follows(follower_name):
      follower = User.objects.get(username=follower_name)              
@@ -581,10 +522,10 @@ def search_followeds(follower_name):
 
 # search followers of an user (username)
 def search_followers(followed_name):
-     follower = User.objects.get(username=followed_name)
-     return follower.profile.get_followers()
-  
-  # create a new follow (followed) from a request
+     followed = User.objects.get(username=followed_name)              
+     return followed.profile.get_followers()
+
+# create a new follow (followed) from a request
 def followCreate(request, follower="",followed=""):
     follow = new_follow_usernames(follower,followed)
     response = str(follow)
@@ -593,7 +534,7 @@ def followCreate(request, follower="",followed=""):
 # search all follows (followeds) from a request
 def followSearch(request, follower=""):
     follows = search_follows(follower)
-    response = "You're looking all follows relationship:"
+    response = "You're looking all follows relationship as follower:"
     response = response + '<BR> <li>' + '<BR> <li>'.join(
          [str(follow) for follow in follows])
 
@@ -639,7 +580,7 @@ def set_notifications_showed(user):
         notification.save()
         count_showed += 1
     user.profile.count_notification -= count_showed
-    user.profile.save() 
+    user.profile.save()
 
 def look_for_new_messages(user_name):
     user = User.objects.get(username=user_name) # We get the user
@@ -669,4 +610,3 @@ def message_notify(request, user=None):
 def search_notify(username):
     user = User.objects.get(username=username)
     return user
-

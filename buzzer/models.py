@@ -31,7 +31,7 @@ class Profile(models.Model):
     url = models.CharField(max_length=150)  # URL provided by the user in association with their profile
     bio = models.CharField(max_length=150) # general information about user 
     birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
-    image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media')
+    image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media') # image user profile
     count_follower = models.PositiveIntegerField(default=0) # number of users follows me  
     count_followed = models.PositiveIntegerField(default=0) # number of users that I follow
     count_notification = models.PositiveIntegerField(default=0) # number of notifications pending (to be showed)    
@@ -52,6 +52,7 @@ class Profile(models.Model):
         data += "  image: " + str(self.image)
         data += "  count_follower: " + str(self.count_follower)
         data += "  count_followed: " + str(self.count_followed)
+        data += "  count_notification: " + str(self.count_notification)
         return data
 
     def all_fields_user(self):
@@ -75,7 +76,6 @@ class Profile(models.Model):
         for follow in Follow.objects.filter(followed=self.user):
             followers.append(follow.follower)
         return followers
-
 
 # Buz: buzzer_buz
 #   posts of buzzer
@@ -152,7 +152,8 @@ class Message (models.Model):
     date = models.DateTimeField(blank=True, null=True) # date-time message sended
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE) # chat 
     content = models.CharField(max_length=140) # text of message
-    notified = models.BooleanField(default=False) # indicates whether the message has been notified
+    notified = models.BooleanField(default=False)
+
 
     def __str__(self):
         return(self.content)	
@@ -225,4 +226,3 @@ class Notification (models.Model):
             else:
                 data += "  follower: " + str(self.follower)
         return data
-

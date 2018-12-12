@@ -1,5 +1,3 @@
-
-
 import datetime
 from django.conf import settings
 from django.db import migrations, models
@@ -67,7 +65,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-
             name='Notification',
             fields=[
                 ('id_notification', models.AutoField(primary_key=True, serialize=False)),
@@ -86,7 +83,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-
             name='Profile',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -98,9 +94,7 @@ class Migration(migrations.Migration):
                 ('image', models.ImageField(default='media/buzzer_logo.png', upload_to='media', verbose_name='Image')),
                 ('count_follower', models.PositiveIntegerField(default=0)),
                 ('count_followed', models.PositiveIntegerField(default=0)),
-
                 ('count_notification', models.PositiveIntegerField(default=0)),
-
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test import SimpleTestCase
 from django.contrib.auth.models import User
-from ..models import Profile,Buzz,Hashtag,Chat,Message
+from ..models import Profile,Buzz,Hashtag,Chat,Message,Follow,Notification
 
 ################################################################################
 # TEST MODEL 
@@ -12,21 +12,22 @@ class Test_Model_Buzzer(TestCase):
     @classmethod
     
     def setUpTestData(cls):
-        # print("setUpTestData (Run once to set up non-modified data for all class methods)")
+        # setUpTestData (Run once to set up non-modified data for all class methods
+        print("Test Model")
         pass
 
     def setUp(self):
-        # print("setUp (Run once for every test method to setup clean data)")
+        # setUp (Run once for every test method to setup clean data 
         pass
     
     def test_model_User(self):
-        print("Method: model User")
+        # test model User
         user = User.objects.create(username='username',password='psw',first_name = 'firstname',last_name = 'lastname')
         self.assertTrue(isinstance(user, User))
         pass        
 
     def test_model_Profile(self):
-        print("Method: model Profile")
+        # test model Profile
         user = User(username='username',password='psw',first_name = 'firstname',last_name = 'lastname')
         profile = Profile(user=user)
         profile.screen_name = 'screename'
@@ -39,11 +40,14 @@ class Test_Model_Buzzer(TestCase):
         "  url: " + profile.url +
         "  bio: " + profile.bio +
         "  birthday: " + str(profile.birthday) +
-        "  image: " + str(profile.image))
+        "  image: " + str(profile.image) + 
+        "  count_follower: " + str(profile.count_follower) +
+        "  count_followed: " + str(profile.count_followed) +
+        "  count_notification: " + str(profile.count_notification))
         pass
 
     def test_model_Buzz(self):
-        print("Method: model Buzz")
+        # test model Buzz
         user = User(username='username',password='psw',first_name = 'firstname',last_name = 'lastname')
         buzz = Buzz(user=user,text='text')
         self.assertTrue(isinstance(buzz, Buzz))
@@ -58,7 +62,7 @@ class Test_Model_Buzzer(TestCase):
         pass
         
     def test_model_Hashtag(self):
-        print("Method: model Hashtag")
+        # test model Hashtag
         user = User(username='username',password='psw',first_name = 'firstname',last_name = 'lastname')
         buzz = Buzz(user=user,text='text')
         hashtag = Hashtag(text='text')
@@ -67,7 +71,7 @@ class Test_Model_Buzzer(TestCase):
         pass
 
     def test_model_Chat(self):
-        print("Method: model Chat")
+        # test model Chat
         user1 = User(username='username1',password='psw1',first_name = 'firstname1',last_name = 'lastname1')
         user2 = User(username='username2',password='psw2',first_name = 'firstname2',last_name = 'lastname2')
         chat = Chat(id_chat=1,name=user1.username+user2.username)
@@ -79,7 +83,7 @@ class Test_Model_Buzzer(TestCase):
         pass
 
     def test_model_Message(self):
-        print("Method: model Message")
+        # test model Message
         user1 = User(username='username1',password='psw1',first_name = 'firstname1',last_name = 'lastname1')
         user2 = User(username='username2',password='psw2',first_name = 'firstname2',last_name = 'lastname2')
         chat = Chat(id_chat=1,name=user1.username+user2.username)
@@ -95,17 +99,33 @@ class Test_Model_Buzzer(TestCase):
         "  notified: " + str(message.notified))
         pass
       
-           
+    def test_model_Follow(self):
+        # test model Follow
+        user1 = User(username='username1',password='psw1',first_name = 'firstname1',last_name = 'lastname1')
+        user2 = User(username='username2',password='psw2',first_name = 'firstname2',last_name = 'lastname2')
+        follow = Follow(follower=user1,followed=user2)
+        self.assertTrue(isinstance(follow, Follow))
+        self.assertEquals(str(follow),follow.follower.username + " follows " + follow.followed.username)
+        self.assertEquals(follow.all_fields(),
+        "follower: " + str(follow.follower) +
+        "  followed: " + str(follow.followed) +
+        "  created: " + str(follow.created) +
+        "  rejected: " + str(follow.rejected))
+        pass
         
-  
-
-      
-        
-        
-
-     
-        
-
-     
-      
-
+    def test_model_Notification(self):  
+        # test model Notification (of buzz)
+        user1 = User(username='username1',password='psw1',first_name = 'firstname1',last_name = 'lastname1')
+        buzz = Buzz(user=user1,text='text')
+        notification = Notification(title='title',description='description',type_notification=2,user_notify=user1,buzz=buzz)
+        self.assertTrue(isinstance(notification, Notification))
+        self.assertEquals(str(notification),notification.title + " - " + notification.description)
+        self.assertEquals(notification.all_fields(),
+        "id_notification: " + str(notification.id_notification) +
+        "  title: " + str(notification.title) +
+        "  description: " + str(notification.description) +
+        "  user_notify: " + str(notification.user_notify) +
+        "  created: " + str(notification.created) +
+        "  type_notification: " + str(notification.type_notification) +
+        "  buzz: " + str(notification.buzz))
+        pass
