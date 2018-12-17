@@ -16,7 +16,7 @@ import re
 def index(request):
     if (request.user.is_authenticated):
         form = PostForm()
-        return render(request, 'profile.html', {'form': form})
+        return profile(request, request.user.username)        
     else:
         return render(request, "login.html")
 
@@ -188,13 +188,14 @@ def actualizarProfile(request, user=""):
 
     return HttpResponseRedirect(reverse("profile", kwargs={'user': user}))
 
-
+@login_required
 def profile(request, user=""):
     # If the username is blank, redirect to login
-    if not user:
-        return HttpResponseRedirect(reverse("login"))
-    else:
+    if User.objects.filter(username=user).exists():
         return getProfile(request, user)
+    else:
+        messages.error(request, "El usuario " + user + " no existe")
+        return HttpResponseRedirect(reverse("index"))
 
 
 def getProfile(request, user=""):
