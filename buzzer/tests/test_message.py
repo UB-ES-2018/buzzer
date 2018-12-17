@@ -3,7 +3,7 @@ from django.test import SimpleTestCase
 from django.test import Client
 from django.contrib.auth.models import User
 from ..models import Profile, Buzz, Hashtag, Chat, Message, Follow, Notification
-from ..views import create_chat,create_message,search_chat,equal_list,messages_chat,equal_list
+from ..views import create_chat,create_message,search_chat,equal_list,messages_chat
 
 # TEST FEATURE SENDING MESSAGES 
 
