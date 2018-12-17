@@ -87,18 +87,18 @@
             <span>{{ message }}</span>
         </div>
     {% endfor %}
-	
+
     <!-- FORM NEW BUZZ -->
     {% block new_buzz %}
         <div class="invisible form-container">
             <h3>Buzzea algo:</h3>
-            <form action="{% url 'post_new' %}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
+            <form action="{% url 'new_post' %}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="save btn btn-default">Buzzear</button>
             </form>
         </div>
     {% endblock %}
-	
+
 	<!-- ACTUAL CONTENT -->
 	{% block content %}{% endblock %}
 
@@ -253,5 +253,5 @@
     </script>
 	{% block scripts %}
 	{% endblock %}
-</body>	
+</body>
 </html>
