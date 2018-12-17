@@ -1,1 +1,1 @@
-web: gunicorn buzzer.wsgi --log-file -
+web: gunicorn EntornBuzzer.wsgi --log-file -
