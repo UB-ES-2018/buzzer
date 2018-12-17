@@ -32,12 +32,6 @@ urlpatterns = [
     url(r'^ajax/follow_toggle/$', views.follow_toggle, name='follow_toggle'),
 
     # Browser DBs
-    url(r'^users/$', views.users, name='users'),
-    url(r'^users/(?P<user>.*)/$', views.users, name='users'),
-    url(r'^profiles/$', views.profiles, name='profiles'),
-    url(r'^profiles/(?P<user>.*)/$', views.profiles, name='profiles'),
-    url(r'^buzzs/$', views.buzzs, name='buzzs'),
-    url(r'^buzzs/(?P<user>.*)/$', views.buzzs, name='buzzs'),
     url(r'^upload/$', views.load_image, name='load_image'),
 
     url(r'^notify/$', views.message_notify, name='message_notify'),
