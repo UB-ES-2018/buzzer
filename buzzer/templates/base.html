@@ -6,8 +6,10 @@
 
     <!-- BOOTSTRAP 3.3.7 -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-    <!-- (BOOTSTRAP OPTIONAL THEME) -->
+	<!-- Link for buzzer notification button style-->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static "stylesheets/not_button.css" %}">
+	<!-- (BOOTSTRAP OPTIONAL THEME) -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -52,6 +54,11 @@
 
                         <li><a href="{% url 'profile' user=user.username %}">{{ user.username }}</a></li>
                         <li id="buzz-button"><a>Buzzear</a></li>
+
+						            <li ><a href="{% url 'message_notify' user %}" class="button-badge" id="numero_de_notificaciones" >
+                            <i class="fa fa-envelope"></i> {{ user.profile.count_notification }}</a>
+                        </li>
+                        <li><a href="{% url 'messages' %}">Mensajes</a></li>
                         <li><a href="{% url 'logout' %}">Logout</a></li>
 
 
@@ -80,18 +87,18 @@
             <span>{{ message }}</span>
         </div>
     {% endfor %}
-	
+
     <!-- FORM NEW BUZZ -->
     {% block new_buzz %}
         <div class="invisible form-container">
             <h3>Buzzea algo:</h3>
-            <form action="{% url 'post_new' %}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
+            <form action="{% url 'new_post' %}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="save btn btn-default">Buzzear</button>
             </form>
         </div>
     {% endblock %}
-	
+
 	<!-- ACTUAL CONTENT -->
 	{% block content %}{% endblock %}
 
@@ -146,8 +153,10 @@
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
+
 	<script type="text/javascript" src="{% static "scripts/navbar.js" %}"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js"></script>
     <script>
         var i = 1;
         $(document).ready(function() {
@@ -169,8 +178,80 @@
         }
         /*$('#alertesModal').on('hidden.bs.modal', function (e) {
             */
+
+
+
+
+    </script>
+    <script type="text/javascript" >
+
+        var loc = window.location;
+
+        var formData = $("#form");
+        var msgInput = $(".pmessage-input");
+        var wsStart = 'ws://';
+
+        if(loc.protocol == 'https:'){
+            wsStart = 'wss://';
+        }
+
+        var endpoint = wsStart + loc.host + "/"+loc.pathname;
+	    var socket = new ReconnectingWebSocket(endpoint);
+
+        socket.onmessage = function(e) {
+
+            var chatDataMsg = JSON.parse(e.data);
+            if (chatDataMsg.username == '{{ user.username }}') {
+                var notifications = chatDataMsg.num_sender;
+                console.log(notifications);
+            } else {
+                var notifications = chatDataMsg.num_reciver;
+            }
+
+            $('#numero_de_notificaciones').text(notifications.toString());
+
+            if(chatDataMsg.message){
+                console.log('misatge');
+                action_afegir_missatge(chatDataMsg.message,'dilluns');
+            }
+
+        };
+
+        window.setInterval(function (event) {
+            console.log('interval');
+            var finalData = {
+                    'type': 'noti',
+                    'message': "",
+                };
+                socket.send(JSON.stringify(finalData));
+        }, 5000);
+        socket.onopen  = function(e){
+            console.log("open",e);
+            console.log(msgInput.val());
+            formData.submit(function (event) {
+                event.preventDefault();
+                var msgText = msgInput.val();
+
+                var finalData = {
+                    'type': 'msg',
+                    'message': msgText,
+                };
+                socket.send(JSON.stringify(finalData));
+                formData[0].reset();
+            });
+
+        };
+
+        socket.onerror  = function(e){
+            console.log("error",e);
+        };
+
+        socket.onclose  = function(e){
+            console.log("close",e);
+        };
+
     </script>
 	{% block scripts %}
 	{% endblock %}
-</body>	
+</body>
 </html>

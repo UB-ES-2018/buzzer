@@ -1,15 +1,18 @@
-version: 2
-jobs:
-  build:
-    # circleCI only in master,SP's and US's branches
-    branches:
-      only:
-        - master
-        - /SP-.*/
-        - /US-.*/
-    docker:
-      - image: circleci/python:3.5-stretch-node-browsers-legacy
-    working_directory: ~/tmp
-    # steps to be execute
-    steps:
-      - checkout
+version: 2 # use CircleCI 2.0
+jobs: # A basic unit of work in a run
+  build: # runs not using Workflows must have a `build` job as entry point 
+    # directory where steps are run
+    working_directory: ~/buzzer
+    docker: # run the steps with Docker
+      # CircleCI Python images available at: https://hub.docker.com/r/circleci/python/
+      - image: circleci/python:3.6.4
+        environment: # environment variables for primary container
+          PIPENV_VENV_IN_PROJECT: true
+    steps: # steps that comprise the `build` job
+      - checkout # check out source code to working directory      
+      - run:
+          command: |
+            sudo pip install pipenv
+            pipenv install
+            pipenv install -r requirements.txt
+            pipenv run "python manage.py test"

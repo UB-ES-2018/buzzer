@@ -11,12 +11,12 @@
 {% block content %}
 
 <ul class="nav nav-tabs" id="search_nav">
-    <li class="active"><a onclick="changeBlockView('buzzs-button')" data-toggle="tab" id="buzzs-button">BUZZERS</a></li>
-    {% if users != None %}<li><a onclick="changeBlockView('users-button')" data-toggle="tab" id="users-button">USERS</a></li>{% endif %}
+    {% if buzzs != None %}<li class="active"><a onclick="changeBlockView('buzzs-button')" data-toggle="tab" id="buzzs-button">BUZZERS</a></li>{% endif %}
+    {% if users != None %}<li {% if buzzs == None %}class="active"{% endif %}><a onclick="changeBlockView('users-button')" data-toggle="tab" id="users-button">USERS</a></li>{% endif %}
 </ul>
 <div id="last_tab"></div>
 
-<div class="buzz-container" id="buzzers-container">
+<div class="buzz-container" id="buzzers-container" {% if buzzs == None %} style="display: none" {% endif %}>
     {% if not buzzs %}
         <div class="card">
           <div class="card-body">
@@ -66,7 +66,7 @@
     {% endif %}
 </div>
 
-<div class="buzz-container" id="users-container" style="display: none" >
+<div class="buzz-container" id="users-container" {% if buzzs != None %} style="display: none" {% endif %} >
     {% if not users %}
         <h3>No results in users for:<br>  -->{{ search_text }}</h3>
     {% else %}

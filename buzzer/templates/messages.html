@@ -64,11 +64,28 @@
     <div class="chat-container">
         {% if not chats %}
             <h3>No hay chats disponibles. ¡Empieza uno!</h3>
+        {% else %}
+            <h3>Chats de {{user.username}}:</h3>
         {% endif %}
-
         {% for chat in chats %}
-        <p>Aquí va un chat</p>
+        {% for member in chat.members.all %}  <!-- assuming only 2 people -->
+        {% if member.username != user.username %}
+            <div class="chat">
+                <div class="basic-info">
+                    <a href="{% url 'profile' user=member.username %}">
+                        <img class="pfp" src="{{ member.profile.image.url}}"></a>
+                    <div class="names">
+                        <a href="{% url 'chat' user=member.username %}"><h4 class="username">{{member.profile.screen_name}}</h4></a>
+                        <h5 class="usertag">@{{member.username}}</h5>
+                    </div>
+                </div>
+                <br>
+                <br>
+            </div>
+        {% endif %}
+        {% endfor %}        
         {% endfor %}
+
     </div>
 
 {% endblock %}
