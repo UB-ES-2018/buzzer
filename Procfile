@@ -1,0 +1,1 @@
+web: gunicorn EntornBuzzer.wsgi --log-file -
