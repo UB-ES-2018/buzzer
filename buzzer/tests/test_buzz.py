@@ -4,7 +4,7 @@ from django.test import Client
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
 from ..models import Profile, Buzz, Hashtag, Chat, Message, Follow, Notification
-from ..views import create_chat,post_new 
+from ..views import create_chat,new_post
 
 # TEST FEATURE SENDING BUZZS AND HASHTAGS
 
