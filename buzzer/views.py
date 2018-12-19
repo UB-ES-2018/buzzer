@@ -321,7 +321,8 @@ def private_messages(request):
     if request.method == "GET":
         user = request.user
         chat_list = search_chats(user.username)
-        args = {'chats': chat_list}
+        buzz_form = PostForm()
+        args = {'chats': chat_list, 'form': buzz_form}
         return render(request, "messages.html", args)
 
 
@@ -345,8 +346,8 @@ def conversation(request, user):
         profile = User.objects.filter(username=user)
 
         form = PMessageForm(auto_id=False)
-
-        args = { "pmessages": pmessages, "profile": profile.first(), "pform": form }
+        buzz_form = PostForm()
+        args = { "pmessages": pmessages, "profile": profile.first(), "pform": form, 'form': buzz_form}
 
         return render(request, "chat.html", args)
 
