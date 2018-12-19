@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 import django_heroku
 from django.contrib.messages import constants as messages
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +28,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^epfow-jfxoqagm&b+4hqaro=!0tq3@1giwfq^9!ml!u%ndh8a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
+    'cloudinary',
     'django_nose',
 ]
 #ASGI_APPLICATION = "buzzer.channels_app.routing.application"
@@ -166,3 +170,9 @@ MESSAGE_TAGS = {
 
 # Activate Django-Heroku
 django_heroku.settings(locals())
+
+# Cloudinary:
+cloudinary.config(
+    cloud_name = "buzzer",
+    api_key = "246751677417867",
+    api_secret = "KJ6mOMLN5iz2sCkzL_uM0qbKeOY")

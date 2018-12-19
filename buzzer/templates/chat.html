@@ -15,7 +15,7 @@
         <div class="basic-info">
             <a href="{% url 'profile' user=profile.username %}"></a>
             <a href="{% url 'load_image' %}">
-                <img class="pfp" src="{{ profile.profile.image.url}}"></a>
+                <img class="pfp" src="{{ profile.profile.image}}"></a>
 
             <div class="names">
                 <a href="{% url 'profile' user=profile.username %}"><h4 class="username">{{profile.profile.screen_name}}</h4></a>
@@ -78,7 +78,7 @@
             <div class="message" >
                 <div class="basic-info">
                     <a href="{% url 'profile' user=message.user %}">
-                        <img class="pfp" src="{{ message.user.profile.image.url}}"></a>
+                        <img class="pfp" src="{{ message.user.profile.image}}"></a>
                     <div class="names">
                         <a href="{% url 'profile' user=message.user.username %}"><h4 class="username">{{message.user.profile.screen_name}}</h4></a>
                         <h5 class="usertag">@{{message.user.username}}</h5>

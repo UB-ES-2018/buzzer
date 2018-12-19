@@ -11,6 +11,10 @@ from .forms import PostForm, ProfileForm, Profile2Form, PMessageForm
 from itertools import chain
 from django.contrib.auth import login, authenticate, logout
 import re
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 
 # Create your views here.
 def index(request):
@@ -248,11 +252,15 @@ def new_post(request):
             # If there is a file attached we save the file and file type in the database
             file = request.FILES.get('file', None)
             if file:
-                post.file = file
                 # Getting file type from MIME
                 post.file_type = file.content_type.split('/')[0]
+                if post.file_type == 'audio':
+                    post.file_type = 'video'
 
             if isMultimedia(post.file_type):
+                if file:
+                    cfile = cloudinary.uploader.upload(file, resource_type=post.file_type)
+                    post.file = cfile['url']
                 post.save()
             else:
                 messages.error(request, "El archivo introducido no es un archivo multimedia")
@@ -285,8 +293,9 @@ def load_image(request):
 
         if form.is_valid():
             instance = form.save(commit=False)
-            instance.user = request.user
-            instance.image = request.FILES['image']
+            instance.user = request.user            
+            image = cloudinary.uploader.upload(request.FILES['image'])            
+            instance.image = image['url']
             instance.save()
 
             return HttpResponseRedirect(reverse("profile", kwargs={'user': request.user.username}))

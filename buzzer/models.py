@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime
 from django.db.models import Q
+from django.contrib.staticfiles.templatetags.staticfiles import static
 
 
 # User:  auth_user (contrib.auth.User)
@@ -31,7 +32,7 @@ class Profile(models.Model):
     url = models.CharField(max_length=150)  # URL provided by the user in association with their profile
     bio = models.CharField(max_length=150) # general information about user 
     birthday = models.DateField(auto_now=False, auto_now_add=False,null=True) # user's birthday
-    image = models.ImageField(default='media/buzzer_logo.png',verbose_name='Image',upload_to='media') # image user profile
+    image = models.CharField(max_length=150, default='https://res.cloudinary.com/buzzer/image/upload/v1545186540/buzzer_logo.png') # cloudinary public_id
     count_follower = models.PositiveIntegerField(default=0) # number of users follows me  
     count_followed = models.PositiveIntegerField(default=0) # number of users that I follow
     count_notification = models.PositiveIntegerField(default=0) # number of notifications pending (to be showed)    
@@ -85,7 +86,7 @@ class Buzz(models.Model):
     text = models.TextField(max_length=140)  # text of the buzz
     created_at = models.DateTimeField(default=datetime.now, blank=True)  # creation date time
     published_date = models.DateTimeField(blank=True, null=True)  # publication date time
-    file = models.FileField(verbose_name='Buzz File', upload_to='buzzfile', blank=True)
+    file = models.CharField(max_length=140, blank=True, null=True) # url of file
     file_type = models.CharField(max_length=100)
 
     def __str__(self):

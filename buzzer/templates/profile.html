@@ -15,7 +15,7 @@
         <div class="basic-info">
             <a href="{% url 'profile' user=profile.username %}"></a>
             <a href="{% url 'load_image' %}">
-                <img class="pfp" src="{{ profile.profile.image.url}}"></a>
+                <img class="pfp" src="{{ profile.profile.image}}"></a>
 
             <div class="names">
                 <a href="{% url 'profile' user=profile.username %}"><h4 class="username">{{profile.profile.screen_name}}</h4></a>
@@ -93,7 +93,7 @@
             <div class="buzz">
                 <div class="basic-info">
                     <a href="{% url 'load_image' %}">
-                        <img class="pfp" src="{{ profile.profile.image.url}}"></a>
+                        <img class="pfp" src="{{ profile.profile.image}}"></a>
                     <div class="names">
                         <a href="{% url 'profile' user=buzz.user.username %}"><h4 class="username">{{buzz.user.profile.screen_name}}</h4></a>
                         <h5 class="usertag">@{{buzz.user.username}}</h5>
@@ -114,14 +114,14 @@
 
                 <!-- Multimedia de un buzz -->
                 {% if buzz.file_type == 'image' %}
-                    <img src="{{buzz.file.url}}" class="multimedia">
+                    <img src="{{buzz.file}}" class="multimedia">
                 {% elif buzz.file_type == 'video' %}
                     <video width="320" height="240" controls class="multimedia">
-                        <source src="{{buzz.file.url}}">
+                        <source src="{{buzz.file}}">
                     </video>
                 {% elif buzz.file_type == 'audio' %}
                     <audio controls preload="auto" autobuffer>
-                    <source src="{{buzz.file.url}}" type="audio/mpeg">
+                    <source src="{{buzz.file}}" type="audio/mpeg">
                         Error con el audio
                     </audio>
                 {% endif %}
